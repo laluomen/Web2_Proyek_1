@@ -12,10 +12,10 @@ $BASE = "/web2/projek/Web2_Proyek_1/src";
 
 // Link menu (kalau halaman belum ada, sementara arahkan ke index.php)
 $L = [
-  "home"      => $BASE . "/index.php",
-  "ruangan"   => $BASE . "/index.php",            // nanti ganti ke ruangan.php
-  "status"    => $BASE . "/index.php",            // nanti ganti ke status_ruangan.php
-  "peminjaman"=> $BASE . "/mahasiswa/ajukan.php",
+  "home"      => $BASE . "/mahasiswa/dashboard.php",
+  "ruangan"   => $BASE . "/mahasiswa/ruangan.php",            // nanti ganti ke ruangan.php
+  "status"    => $BASE . "/mahasiswa/status_ruangan.php",            // nanti ganti ke status_ruangan.php
+  "peminjaman"=> $BASE . "/mahasiswa/peminjaman.php",
   "login"     => $BASE . "/auth/login.php",
 ];
 
@@ -70,4 +70,4 @@ function active(string $key, string $activeNav): string {
   </div>
 </div>
 
-<div class="wrap"></div>
+<div class="wrap">
