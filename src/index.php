@@ -1,5 +1,9 @@
 <?php
 require __DIR__.'/header.php';
+require_once __DIR__ . '/../config/config.php';
+
+$pdo = db();
+echo "DB connect OK";
 ?>
 <!DOCTYPE html>
 <html lang="en">
