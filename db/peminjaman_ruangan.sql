@@ -1,3 +1,5 @@
+CREATE DATABASE  IF NOT EXISTS `peminjaman_ruangan` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci */ /*!80016 DEFAULT ENCRYPTION='N' */;
+USE `peminjaman_ruangan`;
 -- MySQL dump 10.13  Distrib 8.0.43, for Win64 (x86_64)
 --
 -- Host: localhost    Database: peminjaman_ruangan
@@ -206,7 +208,7 @@ CREATE TABLE `users` (
   `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`),
   UNIQUE KEY `username` (`username`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -215,9 +217,17 @@ CREATE TABLE `users` (
 
 LOCK TABLES `users` WRITE;
 /*!40000 ALTER TABLE `users` DISABLE KEYS */;
-INSERT INTO `users` VALUES (1,'Admin Fakultas','admin','0192023a7bbd73250516f069df18b500','admin',NULL,'2026-02-14 04:08:43');
+INSERT INTO `users` VALUES (1,'Admin Fakultas','admin','0192023a7bbd73250516f069df18b500','admin',NULL,'2026-02-14 04:08:43'),(5,'Admin Fasilkom','admin2','$2y$10$92IXUNpkm8QXjDqvZNxjKuKPKZP8vVJLzLTF0.DQkf2f5g3DkXzl6','admin',NULL,'2026-02-14 05:16:26');
 /*!40000 ALTER TABLE `users` ENABLE KEYS */;
 UNLOCK TABLES;
+
+--
+-- Dumping events for database 'peminjaman_ruangan'
+--
+
+--
+-- Dumping routines for database 'peminjaman_ruangan'
+--
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
@@ -228,4 +238,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2026-02-14 11:51:58
+-- Dump completed on 2026-02-14 13:51:05
