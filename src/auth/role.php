@@ -1,12 +1,12 @@
 <?php
-if (session_status() == PHP_SESSION_NONE) {
+if (session_status() === PHP_SESSION_NONE) {
     session_start();
 }
 
-function requireRole(String $user):void{
-    if(($_SESSION["role"]??"") != $user){
+function requireRole(string $role): void {
+    if (($_SESSION['role'] ?? '') !== $role) {
         http_response_code(403);
-        echo "Kamu gak punya akses ke halaman ini";
+        echo "Akses ditolak.";
         exit;
     }
 }

@@ -1,39 +1,73 @@
-<!DOCTYPE html>
 <?php
-ini_set('display_errors', '1');
-ini_set('display_startup_errors', '1');
-error_reporting(E_ALL);
-?>
+// src/templates/header.php
+declare(strict_types=1);
 
-<html lang="en">
+if (session_status() === PHP_SESSION_NONE) session_start();
+
+$pageTitle = $pageTitle ?? "Peminjaman Ruangan";
+$activeNav = $activeNav ?? "home";
+
+// Sesuaikan dengan URL project kamu di browser
+$BASE = "/web2/projek/Web2_Proyek_1/src";
+
+// Link menu (kalau halaman belum ada, sementara arahkan ke index.php)
+$L = [
+  "home"      => $BASE . "/mahasiswa/dashboard.php",
+  "ruangan"   => $BASE . "/mahasiswa/ruangan.php",            // nanti ganti ke ruangan.php
+  "status"    => $BASE . "/mahasiswa/status_ruangan.php",            // nanti ganti ke status_ruangan.php
+  "peminjaman"=> $BASE . "/mahasiswa/peminjaman.php",
+  "login"     => $BASE . "/auth/login.php",
+];
+
+function active(string $key, string $activeNav): string {
+  return $key === $activeNav ? "active" : "";
+}
+?>
+<!doctype html>
+<html lang="id">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="icon" href="data;,">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title><?= htmlspecialchars($pageTitle) ?></title>
+
+  <!-- Semua style ada di file ini -->
+  <link rel="stylesheet" href="<?= $BASE ?>/assets/css/style.css">
 </head>
 <body>
-    <nav class="navbar navbar-expand-md bg-body-tertiary">
-        <div class="container-fluid">
-            <a class="navbar-brand" href="../">
-                <img src="" alt="">
-            </a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarTogglerDemo01" aria-controls="navbarTogglerDemo01" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse">
-                <div class="navbar-nav">
-                    <a class="nav-link" href="./">Home</a>
-                    <a class="nav-link" href="./admin/">Ruangan</a>
-                    <a class="nav-link" href="./mahasiswa/">Status Ruangan</a>
-                    <a class="nav-link" href="./mahasiswa/">Peminjaman</a>
-                    <a class="nav-link" href="./auth/">Login</a>
-                </div>
-            </div>
-        </div>
+
+<div class="nav">
+  <div class="navin">
+    <a class="brand" href="<?= $L['home'] ?>">
+      <div class="logo">NF</div>
+      <div>Peminjaman Ruangan</div>
+    </a>
+
+    <nav class="menu" aria-label="Primary">
+      <a class="<?= active('home',$activeNav) ?>" href="<?= $L['home'] ?>">Home</a>
+      <a class="<?= active('ruangan',$activeNav) ?>" href="<?= $L['ruangan'] ?>">Ruangan</a>
+      <a class="<?= active('status',$activeNav) ?>" href="<?= $L['status'] ?>">Status Ruangan</a>
+      <a class="<?= active('peminjaman',$activeNav) ?>" href="<?= $L['peminjaman'] ?>">Peminjaman</a>
+      <a class="<?= active('login',$activeNav) ?>" href="<?= $L['login'] ?>">Login</a>
     </nav>
 
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.8/dist/umd/popper.min.js" integrity="sha384-I7E8VVD/ismYTF4hNIPjVp/Zjvgyol6VFvRkX/vR+Vc4jQkC+hVqc2pM8ODewa9r" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.min.js" integrity="sha384-G/EV+4j2dNv+tEPo3++6LCgdCROaejBqfUeNjuKAiuXbjrxilcCdDz6ZAVfHWe1Y" crossorigin="anonymous"></script>
-</body>
-</html>
+    <!-- Hamburger (mobile) -->
+    <button class="burger" id="burgerBtn" aria-label="Buka menu" aria-expanded="false" aria-controls="mobileMenu">
+      <span class="lines" aria-hidden="true">
+        <span class="line"></span>
+        <span class="line"></span>
+        <span class="line"></span>
+      </span>
+    </button>
+
+    <!-- Mobile dropdown -->
+    <div class="mobilePanel" id="mobileMenu" role="menu">
+      <a class="<?= active('home',$activeNav) ?>" href="<?= $L['home'] ?>" role="menuitem">Home</a>
+      <a class="<?= active('ruangan',$activeNav) ?>" href="<?= $L['ruangan'] ?>" role="menuitem">Ruangan</a>
+      <a class="<?= active('status',$activeNav) ?>" href="<?= $L['status'] ?>" role="menuitem">Status Ruangan</a>
+      <a class="<?= active('peminjaman',$activeNav) ?>" href="<?= $L['peminjaman'] ?>" role="menuitem">Peminjaman</a>
+      <a class="<?= active('login',$activeNav) ?>" href="<?= $L['login'] ?>" role="menuitem">Login</a>
+    </div>
+  </div>
+</div>
+
+<div class="wrap">
