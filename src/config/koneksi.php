@@ -3,7 +3,7 @@ if (session_status() === PHP_SESSION_NONE){
      session_start();
 }
 
-$envPath = __DIR__ . '/../.env';
+$envPath = __DIR__ . '/../../.env';
 if (file_exists($envPath)) {
     foreach (file($envPath, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES) as $line) {
         $line = trim($line);
@@ -44,4 +44,3 @@ function query(string $sql, array $params = []): PDOStatement {
 function e($value): string {
     return htmlspecialchars((string)$value, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
 }
-
