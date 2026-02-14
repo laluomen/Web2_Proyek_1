@@ -1,6 +1,6 @@
 <?php
 require __DIR__ . '/templates/header.php';
-require_once __DIR__ . '/config/config.php';
+require_once __DIR__ . '/config/koneksi.php';
 
 
 $pdo = db();
