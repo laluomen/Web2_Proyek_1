@@ -750,3 +750,289 @@ label {
 .room-btn:visited {
   color: #fff !important;
 }
+
+
+/* =====================
+   ADMIN LAYOUT + SIDEBAR
+   ===================== */
+
+.admin-body {
+  min-height: 100vh;
+}
+
+.admin-main {
+  margin-left: 280px;
+  padding: 26px 22px 90px;
+  max-width: 1200px;
+}
+
+.admin-top {
+  color: #eaf2f7;
+  margin: 6px 0 18px;
+}
+.admin-h1 {
+  margin: 0;
+  font-size: 28px;
+  font-weight: 900;
+  letter-spacing: 0.2px;
+}
+.admin-sub {
+  margin-top: 6px;
+  color: rgba(234, 242, 247, 0.82);
+  font-size: 13px;
+}
+
+.admin-card {
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.94);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  box-shadow: 0 22px 60px rgba(0, 0, 0, 0.28);
+  padding: 18px 18px;
+}
+
+/* Sidebar container */
+.asb {
+  position: fixed;
+  inset: 0 auto 0 0;
+  width: 280px;
+  height: 100vh;
+  z-index: 30;
+  padding: 16px 14px;
+
+  background: rgba(255, 255, 255, 0.06);
+  border-right: 1px solid rgba(255, 255, 255, 0.1);
+  backdrop-filter: saturate(140%) blur(10px);
+  color: #eaf2f7;
+}
+
+.asb-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 8px 8px 12px;
+}
+
+.asb-brand {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-weight: 900;
+  letter-spacing: 0.2px;
+}
+.asb-logo {
+  width: 40px;
+  height: 40px;
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 900;
+}
+.asb-title .t1 {
+  font-size: 14px;
+  font-weight: 900;
+  line-height: 1.1;
+}
+.asb-title .t2 {
+  font-size: 12px;
+  color: rgba(234, 242, 247, 0.78);
+  margin-top: 2px;
+}
+
+/* burger only for mobile */
+.asb-burger {
+  display: none;
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(255, 255, 255, 0.08);
+  color: #eaf2f7;
+  cursor: pointer;
+  align-items: center;
+  justify-content: center;
+}
+.asb-burger:focus {
+  outline: none;
+  box-shadow: 0 0 0 4px rgba(255, 255, 255, 0.1);
+}
+.asb-lines {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+.asb-line {
+  width: 18px;
+  height: 2px;
+  background: #eaf2f7;
+  border-radius: 99px;
+  opacity: 0.92;
+}
+
+/* nav */
+.asb-nav {
+  padding: 10px 6px 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.asb-link {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 12px;
+  border-radius: 14px;
+  font-weight: 750;
+  color: #eaf2f7;
+}
+
+.asb-link:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.asb-link.active {
+  background: rgba(255, 255, 255, 0.14);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+}
+
+.asb-link .dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 999px;
+  background: rgba(234, 242, 247, 0.45);
+}
+
+.asb-link.active .dot {
+  background: var(--accent);
+  box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.18);
+}
+
+.asb-sep {
+  height: 1px;
+  margin: 10px 10px 6px;
+  background: rgba(255, 255, 255, 0.12);
+}
+
+.asb-link.danger {
+  color: #ffd5d5;
+}
+.asb-link.danger .dot {
+  background: rgba(255, 213, 213, 0.55);
+}
+
+/* footer pill */
+.asb-foot {
+  position: absolute;
+  left: 14px;
+  right: 14px;
+  bottom: 14px;
+}
+
+.asb-pill {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 12px;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  font-size: 12px;
+}
+.asb-pill .muted {
+  color: rgba(234, 242, 247, 0.78);
+}
+
+/* overlay mobile */
+.asb-overlay {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 25;
+  background: rgba(0, 0, 0, 0.45);
+}
+
+/* Responsive: sidebar becomes drawer */
+@media (max-width: 992px) {
+  .admin-main {
+    margin-left: 0;
+    padding-top: 18px;
+  }
+
+  .asb {
+    transform: translateX(-105%);
+    transition: transform 0.22s ease;
+    box-shadow: 0 22px 60px rgba(0, 0, 0, 0.35);
+  }
+  .asb.open {
+    transform: translateX(0);
+  }
+
+  .asb-burger {
+    display: flex;
+  }
+
+  .asb-overlay.show {
+    display: block;
+  }
+}
+/* tombol logout di bawah sidebar */
+.asb-logout {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  justify-content: center;
+
+  padding: 11px 12px;
+  border-radius: 16px;
+  font-weight: 900;
+
+  color: #fff;
+  background: linear-gradient(180deg, #ef4444, #b91c1c);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  box-shadow: 0 14px 30px rgba(185, 28, 28, 0.25);
+  margin-bottom: 10px;
+}
+
+.asb-logout:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 18px 40px rgba(185, 28, 28, 0.32);
+}
+
+.asb-logout .dot {
+  background: rgba(255, 255, 255, 0.75);
+}
+/* kasih ruang supaya menu tidak ketutup tombol bawah */
+.asb-nav {
+  padding-bottom: 90px;
+}
+
+/* tombol logout di bawah sidebar (tema hijau) */
+.asb-logout {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  justify-content: center;
+
+  padding: 11px 12px;
+  border-radius: 16px;
+  font-weight: 900;
+
+  color: #fff;
+  background: linear-gradient(180deg, var(--accent), var(--accent2));
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  box-shadow: 0 14px 30px rgba(34, 197, 94, 0.25);
+}
+
+.asb-logout:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 18px 40px rgba(34, 197, 94, 0.32);
+}
+
+.asb-logout .dot {
+  background: rgba(255, 255, 255, 0.75);
+}
