@@ -1,4 +1,7 @@
 <?php
+require_once __DIR__ . '/../auth/auth.php';
+requireLogin();
+
 $pageTitle = "Ruangan";
 $activeNav = "ruangan";
 require_once __DIR__ . "/../templates/header.php";

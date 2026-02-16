@@ -8,15 +8,17 @@ require_once __DIR__ . '/../config/koneksi.php';
 $username = trim($_POST['username'] ?? '');
 $password = (string)($_POST['password'] ?? '');
 
+$redirect = trim($_POST['redirect'] ?? '');
+
 if ($username === '' || $password === '') {
-    header("Location: login.php?err=invalid");
+    header("Location: login.php?err=invalid&redirect=" . urlencode($redirect));
     exit;
 }
 
 $user = query("SELECT id, nama, password, role FROM users WHERE username = ? LIMIT 1", [$username])->fetch();
 
 if (!$user) {
-    header("Location: login.php?err=invalid");
+    header("Location: login.php?err=invalid&redirect=" . urlencode($redirect));
     exit;
 }
 
@@ -37,7 +39,7 @@ else if (preg_match('/^[a-f0-9]{32}$/i', $stored)) {
 }
 
 if (!$ok) {
-    header("Location: login.php?err=invalid");
+    header("Location: login.php?err=invalid&redirect=" . urlencode($redirect));
     exit;
 }
 
@@ -45,6 +47,11 @@ session_regenerate_id(true);
 $_SESSION['user_id'] = (int)$user['id'];
 $_SESSION['role']    = (string)$user['role'];
 $_SESSION['nama']    = (string)$user['nama'];
+
+if ($redirect !== '') {
+    header("Location: " . $redirect);
+    exit;
+}
 
 if ($_SESSION['role'] === 'admin') {
     header("Location: ../admin/dashboard.php");
