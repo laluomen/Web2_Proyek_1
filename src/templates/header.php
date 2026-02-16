@@ -2,23 +2,23 @@
 // src/templates/header.php
 declare(strict_types=1);
 
+require_once __DIR__ . "/../config/koneksi.php";
+
 if (session_status() === PHP_SESSION_NONE)
   session_start();
 
 $pageTitle = $pageTitle ?? "Peminjaman Ruangan";
 $activeNav = $activeNav ?? "home";
 
-// Sesuaikan dengan URL project kamu di browser
-$Root = "/web2/projek/Web2_Proyek_1/src/";
-$BASE = $Root;
+
 // Link menu
 $L = [
-  "home" => $BASE . "/mahasiswa/dashboard.php",
-  "ruangan" => $BASE . "/mahasiswa/ruangan.php",
-  "status" => $BASE . "/mahasiswa/status_ruangan.php",
-  "peminjaman" => $BASE . "/mahasiswa/peminjaman.php",
-  "login" => $BASE . "/auth/login.php",
-  "logout" => $BASE . "/auth/logout.php",
+  "home" => $BASE . "mahasiswa/dashboard.php",
+  "ruangan" => $BASE . "mahasiswa/ruangan.php",
+  "status" => $BASE . "mahasiswa/status_ruangan.php",
+  "peminjaman" => $BASE . "mahasiswa/peminjaman.php",
+  "login" => $BASE . "auth/login.php",
+  "logout" => $BASE . "auth/logout.php",
 ];
 
 function active(string $key, string $activeNav): string
