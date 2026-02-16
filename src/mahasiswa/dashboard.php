@@ -7,23 +7,23 @@ $pageTitle = "Home";
 $activeNav = "home";
 require_once __DIR__ . "/../templates/header.php";
 
-// Sesuaikan dengan URL project kamu di browser
-$Root = "/Web2_Proyek_1/src";
-$BASE = $Root; // kalau di root, ganti jadi "" atau "/Web2_Proyek_1/src" sesuai kebutuhan
+// Sesuaikan dengan URL project di browser
+$Root = "web2/projek/Web2_Proyek_1/src";
+$BASE = $Root;
 
 /* HERO IMAGE */
 $heroImages = query("SELECT foto FROM ruangan WHERE foto IS NOT NULL AND foto != '' ORDER BY id")->fetchAll();
 
 /* FILTER */
-$tgl_awal = $_GET['tgl_awal'] ?? '';
+$tgl_awal  = $_GET['tgl_awal'] ?? '';
 $tgl_akhir = $_GET['tgl_akhir'] ?? '';
-$gedung = $_GET['gedung'] ?? '';
+$gedung    = $_GET['gedung'] ?? '';
 
 $params = [];
-$where = [];
+$where  = [];
 
 if ($gedung) {
-   $where[] = "ruangan.gedung = ?";
+   $where[]  = "ruangan.gedung = ?";
    $params[] = $gedung;
 }
 
@@ -38,12 +38,12 @@ if ($tgl_awal && $tgl_akhir) {
 }
 
 $sql = "SELECT * FROM ruangan";
-if ($where)
+if ($where) {
    $sql .= " WHERE " . implode(" AND ", $where);
+}
 $sql .= " ORDER BY nama_ruangan";
 
 $ruangan = query($sql, $params)->fetchAll();
-
 $gedungList = query("SELECT DISTINCT gedung FROM ruangan ORDER BY gedung")->fetchAll();
 ?>
 
@@ -51,17 +51,13 @@ $gedungList = query("SELECT DISTINCT gedung FROM ruangan ORDER BY gedung")->fetc
 <section class="hero-full">
 
    <div id="heroCarousel" class="carousel slide carousel-fade" data-bs-ride="carousel">
-
       <div class="carousel-inner">
-
          <?php foreach ($heroImages as $i => $img): ?>
             <div class="carousel-item <?= $i == 0 ? 'active' : '' ?>">
-               <img src="<?= $BASE ?>/uploads/ruangan/<?= e($img['foto']) ?>" class="d-block w-100">
+               <img src="<?= $BASE ?>/uploads/ruangan/<?= e($img['foto']) ?>" class="d-block w-100" alt="Hero">
             </div>
          <?php endforeach; ?>
-
       </div>
-
    </div>
 
    <div class="hero-content">
@@ -92,7 +88,7 @@ $gedungList = query("SELECT DISTINCT gedung FROM ruangan ORDER BY gedung")->fetc
                <label>Gedung</label>
                <div class="select-wrap">
                   <select name="gedung" class="form-control">
-                     <option value="">-- Semua Gedung --</option>
+                     <option value="">Semua Gedung</option>
                      <?php foreach ($gedungList as $g): ?>
                         <option value="<?= e($g['gedung']) ?>" <?= $gedung == $g['gedung'] ? 'selected' : '' ?>>
                            <?= e($g['gedung']) ?>
@@ -103,7 +99,7 @@ $gedungList = query("SELECT DISTINCT gedung FROM ruangan ORDER BY gedung")->fetc
             </div>
 
             <div class="col-md-3">
-               <button class="btn w-100">Check</button>
+               <button type="submit" class="btn w-100">Check</button>
             </div>
 
          </div>
@@ -117,8 +113,8 @@ $gedungList = query("SELECT DISTINCT gedung FROM ruangan ORDER BY gedung")->fetc
 
          <?php if (!$ruangan): ?>
             <div class="text-center text-muted fs-5 mt-5">
-               Saat ini ruangan di gedung yang dipilih tidak tersedia.<br>
-               Silakan cek gedung lain.
+               <p class="text-white">Saat ini ruangan di gedung yang dipilih tidak tersedia.</p>
+               <p class="text-white">Silakan cek gedung lain.</p>
             </div>
          <?php else: ?>
 
@@ -126,7 +122,6 @@ $gedungList = query("SELECT DISTINCT gedung FROM ruangan ORDER BY gedung")->fetc
                <?php foreach ($ruangan as $r): ?>
 
                   <div class="room-item">
-
                      <div class="room-card">
 
                         <div class="room-img">
@@ -141,13 +136,12 @@ $gedungList = query("SELECT DISTINCT gedung FROM ruangan ORDER BY gedung")->fetc
                               Kapasitas <?= e($r['kapasitas']) ?> orang
                            </div>
 
-                           <a href="<?= $BASE ?>/mahasiswa/ruangan.php?id=<?= $r['id'] ?>" class="room-btn">
+                           <a href="<?= $BASE ?>/mahasiswa/ruangan.php?id=<?= e((string)$r['id']) ?>" class="room-btn">
                               View Details
                            </a>
                         </div>
 
                      </div>
-
                   </div>
 
                <?php endforeach; ?>
