@@ -8,12 +8,11 @@ $activeNav = "home";
 require_once __DIR__ . "/../templates/header.php";
 
 // Sesuaikan dengan URL project kamu di browser
-$Root="/Web2_Proyek_1/src";
+$Root = "/Web2_Proyek_1/src";
 $BASE = $Root; // kalau di root, ganti jadi "" atau "/Web2_Proyek_1/src" sesuai kebutuhan
 
 /* HERO IMAGE */
-$hero = query("SELECT foto FROM ruangan ORDER BY id LIMIT 1")->fetch();
-$heroImg = $hero['foto'] ?? 'default.jpg';
+$heroImages = query("SELECT foto FROM ruangan WHERE foto IS NOT NULL AND foto != '' ORDER BY id")->fetchAll();
 
 /* FILTER */
 $tgl_awal = $_GET['tgl_awal'] ?? '';
@@ -50,12 +49,27 @@ $gedungList = query("SELECT DISTINCT gedung FROM ruangan ORDER BY gedung")->fetc
 
 <!-- HERO -->
 <section class="hero-full">
-   <img src="<?= $BASE ?>/uploads/ruangan/<?= e($heroImg) ?>">
+
+   <div id="heroCarousel" class="carousel slide carousel-fade" data-bs-ride="carousel">
+
+      <div class="carousel-inner">
+
+         <?php foreach ($heroImages as $i => $img): ?>
+            <div class="carousel-item <?= $i == 0 ? 'active' : '' ?>">
+               <img src="<?= $BASE ?>/uploads/ruangan/<?= e($img['foto']) ?>" class="d-block w-100">
+            </div>
+         <?php endforeach; ?>
+
+      </div>
+
+   </div>
+
    <div class="hero-content">
       <h5>WELCOME TO RBS</h5>
       <h1>Room Booking System</h1>
       <h2>Fasilkom Unsri</h2>
    </div>
+
 </section>
 
 <!-- FILTER -->
@@ -98,7 +112,7 @@ $gedungList = query("SELECT DISTINCT gedung FROM ruangan ORDER BY gedung")->fetc
 </section>
 
 <div class="wrap">
-   <section class="py-5">
+   <section class="room-section">
       <div class="container">
 
          <?php if (!$ruangan): ?>
