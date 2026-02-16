@@ -3,6 +3,17 @@ if (session_status() === PHP_SESSION_NONE){
      session_start();
 }
 
+// ===== BASE URL (single source of truth) =====
+// Akan menghasilkan contoh: /web2/projek/Web2_Proyek_1/src/
+$scriptName = str_replace('\\', '/', $_SERVER['SCRIPT_NAME'] ?? '');
+$pos = strpos($scriptName, '/src/');
+if ($pos !== false) {
+    $BASE = substr($scriptName, 0, $pos + 5); // termasuk "/src/"
+} else {
+    $BASE = rtrim(dirname($scriptName), '/') . '/';
+}
+$BASE = rtrim($BASE, '/') . '/';
+
 $envPath = __DIR__ . '/../../.env';
 if (file_exists($envPath)) {
     foreach (file($envPath, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES) as $line) {

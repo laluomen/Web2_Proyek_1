@@ -7,10 +7,6 @@ $pageTitle = "Home";
 $activeNav = "home";
 require_once __DIR__ . "/../templates/header.php";
 
-// Sesuaikan dengan URL project kamu di browser
-$Root = "/web2/projek/Web2_Proyek_1/src";
-$BASE = $Root; // kalau di root, ganti jadi "" atau "/Web2_Proyek_1/src" sesuai kebutuhan
-
 /* HERO IMAGE */
 $heroImages = query("SELECT foto FROM ruangan WHERE foto IS NOT NULL AND foto != '' ORDER BY id")->fetchAll();
 
