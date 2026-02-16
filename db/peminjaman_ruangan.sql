@@ -241,3 +241,12 @@ UNLOCK TABLES;
 -- Dump completed on 2026-02-14 13:51:05
 INSERT INTO ruangan (nama_ruangan, gedung, kapasitas, foto)
 VALUES ('Ruang 101', 'Gedung A', 40, 'ruang101.jpg');
+
+INSERT INTO ruangan (nama_ruangan, gedung, kapasitas, foto)
+VALUES ('Ruang 102', 'Gedung A', 30, 'ruang102.jpg');
+
+INSERT INTO ruangan (nama_ruangan, gedung, kapasitas, foto)
+VALUES ('Ruang 111', 'Gedung B', 30, 'ruang111.jpg');
+
+INSERT INTO ruangan (nama_ruangan, gedung, kapasitas, foto)
+VALUES ('Ruang 112', 'Gedung B', 40, 'ruang112.jpg');

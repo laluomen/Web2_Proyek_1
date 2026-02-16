@@ -35,8 +35,7 @@ a {
   text-decoration: none;
 }
 
-/* ===== NAVBAR (Proyek_0 style) ===== */
-/* ===== CUSTOM NAVBAR (SAFE DARI BOOTSTRAP) ===== */
+/* ===== CUSTOM NAVBAR ===== */
 .topnav {
   position: sticky;
   top: 0;
@@ -206,13 +205,12 @@ a {
   border: 1px solid rgba(255, 255, 255, 0.12);
 }
 
-/* =========================================================
-   LOGIN IMPROVEMENT (lebih “pas” seperti yang kamu minta)
-   ========================================================= */
+/* =====================
+    LOGIN IMPROVEMENT
+   ===================== */
 
-/* stage: panel login lebih center + ada glow halus */
 .login-stage {
-  min-height: calc(100vh - 68px - 70px); /* nav + footer kira-kira */
+  min-height: calc(100vh - 68px - 70px);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -421,15 +419,15 @@ label {
 /* ================= HERO FULL ================= */
 .hero-full {
   position: relative;
-  min-height: 88vh; /* lebih natural dari 100vh */
+  min-height: 88vh;
   width: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
   text-align: center;
   overflow: hidden;
-  padding-top: 90px; /* kompensasi navbar sticky */
-  padding-bottom: 140px; /* ruang buat filter floating */
+  padding-top: 90px;
+  padding-bottom: 140px;
 }
 
 /* background image */
@@ -541,8 +539,8 @@ label {
 
 /* rapetin jarak grid bootstrap */
 .filter-box .row {
-  align-items: end;
-  gap: 10px; /* ini kunci biar ga jauh */
+  align-items: flex-end;
+  gap: 0px;
 }
 
 /* label */
@@ -598,8 +596,9 @@ label {
   text-align: left;
 }
 
-/* tombol */
 .filter-box .btn {
+  margin-top: 0;
+  width: 100%;
   height: 46px;
   border-radius: 16px;
   font-weight: 800;
@@ -620,7 +619,7 @@ label {
 /* ================= AUTO RESPONSIVE ROOM GRID ================= */
 /* ================= LOCK 4 COLUMN GRID ================= */
 .room-section{
-  padding-top:10px;   /* kamu bisa ubah 0 / 10 / 20 sesuai rasa */
+  padding-top:10px;
   padding-bottom:40px;
 }
 

@@ -8,7 +8,7 @@ $activeNav = "home";
 require_once __DIR__ . "/../templates/header.php";
 
 // Sesuaikan dengan URL project kamu di browser
-$Root = "/Web2_Proyek_1/src";
+$Root = "/web2/projek/Web2_Proyek_1/src";
 $BASE = $Root; // kalau di root, ganti jadi "" atau "/Web2_Proyek_1/src" sesuai kebutuhan
 
 /* HERO IMAGE */
@@ -92,7 +92,7 @@ $gedungList = query("SELECT DISTINCT gedung FROM ruangan ORDER BY gedung")->fetc
                <label>Gedung</label>
                <div class="select-wrap">
                   <select name="gedung" class="form-control">
-                     <option value="">-- Semua Gedung --</option>
+                     <option value="">Semua Gedung</option>
                      <?php foreach ($gedungList as $g): ?>
                         <option value="<?= e($g['gedung']) ?>" <?= $gedung == $g['gedung'] ? 'selected' : '' ?>>
                            <?= e($g['gedung']) ?>
@@ -117,8 +117,8 @@ $gedungList = query("SELECT DISTINCT gedung FROM ruangan ORDER BY gedung")->fetc
 
          <?php if (!$ruangan): ?>
             <div class="text-center text-muted fs-5 mt-5">
-               Saat ini ruangan di gedung yang dipilih tidak tersedia.<br>
-               Silakan cek gedung lain.
+               <p class="text-white">Saat ini ruangan di gedung yang dipilih tidak tersedia.</p><br>
+               <p class="text-white">Silakan cek gedung lain.</p>
             </div>
          <?php else: ?>
 
