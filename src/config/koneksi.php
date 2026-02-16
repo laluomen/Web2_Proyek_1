@@ -4,7 +4,7 @@ if (session_status() === PHP_SESSION_NONE){
 }
 
 // ===== BASE URL (single source of truth) =====
-// Akan menghasilkan contoh: /web2/projek/Web2_Proyek_1/src/
+// Hasil contoh: /web2/projek/Web2_Proyek_1/src/
 $scriptName = str_replace('\\', '/', $_SERVER['SCRIPT_NAME'] ?? '');
 $pos = strpos($scriptName, '/src/');
 if ($pos !== false) {

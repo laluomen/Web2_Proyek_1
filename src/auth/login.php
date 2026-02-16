@@ -9,6 +9,7 @@ if (isset($_SESSION['user_id'], $_SESSION['role'])) {
 }
 
 $err = $_GET['err'] ?? '';
+$redirect = $_GET['redirect'] ?? '';
 
 $pageTitle = "Login - Peminjaman Ruangan";
 $activeNav = "login";
@@ -37,6 +38,7 @@ require_once __DIR__ . "/../templates/header.php";
       <?php endif; ?>
 
       <form action="proses_login.php" method="post" autocomplete="off">
+        <input type="hidden" name="redirect" value="<?= htmlspecialchars($redirect) ?>">
         <div class="field">
           <label for="username">Username</label>
           <input class="input" id="username" type="text" name="username" placeholder="Masukkan username" required>
