@@ -239,3 +239,5 @@ UNLOCK TABLES;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
 -- Dump completed on 2026-02-14 13:51:05
+INSERT INTO ruangan (nama_ruangan, gedung, kapasitas, foto)
+VALUES ('Ruang 101', 'Gedung A', 40, 'ruang101.jpg');
