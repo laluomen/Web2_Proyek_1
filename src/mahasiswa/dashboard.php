@@ -7,7 +7,7 @@ $pageTitle = "Home";
 $activeNav = "home";
 require_once __DIR__ . "/../templates/header.php";
 
-$BASE = "/Web2_Proyek_1/src";
+$BASE = "";
 
 /* HERO IMAGE */
 $hero = query("SELECT foto FROM ruangan ORDER BY id LIMIT 1")->fetch();
