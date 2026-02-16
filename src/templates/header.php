@@ -8,8 +8,8 @@ $pageTitle = $pageTitle ?? "Peminjaman Ruangan";
 $activeNav = $activeNav ?? "home";
 
 // Sesuaikan dengan URL project kamu di browser
-$BASE = "/Web2_Proyek_1/src";
-
+$Root="";
+$BASE = $Root;
 // Link menu (kalau halaman belum ada, sementara arahkan ke index.php)
 $L = [
   "home"      => $BASE . "/mahasiswa/dashboard.php",
@@ -17,6 +17,7 @@ $L = [
   "status"    => $BASE . "/mahasiswa/status_ruangan.php",            // nanti ganti ke status_ruangan.php
   "peminjaman"=> $BASE . "/mahasiswa/peminjaman.php",
   "login"     => $BASE . "/auth/login.php",
+  "logout"    => $BASE . "/auth/logout.php", // TAMBAH INI
 ];
 
 function active(string $key, string $activeNav): string {
@@ -47,7 +48,12 @@ function active(string $key, string $activeNav): string {
       <a class="<?= active('ruangan',$activeNav) ?>" href="<?= $L['ruangan'] ?>">Ruangan</a>
       <a class="<?= active('status',$activeNav) ?>" href="<?= $L['status'] ?>">Status Ruangan</a>
       <a class="<?= active('peminjaman',$activeNav) ?>" href="<?= $L['peminjaman'] ?>">Peminjaman</a>
-      <a class="<?= active('login',$activeNav) ?>" href="<?= $L['login'] ?>">Login</a>
+      <?php if (!empty($_SESSION['role'])): ?>
+      <a href="<?= $L['logout'] ?>">Logout</a>
+      <?php else: ?>
+        <a class="<?= active('login',$activeNav) ?>" href="<?= $L['login'] ?>">Login</a>
+      <?php endif; ?>
+
     </nav>
 
     <!-- Hamburger (mobile) -->
@@ -70,4 +76,3 @@ function active(string $key, string $activeNav): string {
   </div>
 </div>
 
-<div class="wrap">
