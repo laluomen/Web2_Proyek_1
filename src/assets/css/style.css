@@ -207,12 +207,11 @@ a {
 }
 
 /* =========================================================
-   LOGIN IMPROVEMENT (lebih “pas” seperti yang kamu minta)
+   LOGIN IMPROVEMENT
    ========================================================= */
 
-/* stage: panel login lebih center + ada glow halus */
 .login-stage {
-  min-height: calc(100vh - 68px - 70px); /* nav + footer kira-kira */
+  min-height: calc(100vh - 68px - 70px);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -539,10 +538,18 @@ label {
     0 0 0 1px rgba(255, 255, 255, 0.25) inset;
 }
 
-/* rapetin jarak grid bootstrap */
+/* PENTING:
+   Jangan pakai "gap" pada .row bootstrap karena bikin kolom melebar dan bisa wrap beda-beda device */
 .filter-box .row {
-  align-items: end;
-  gap: 10px; /* ini kunci biar ga jauh */
+  align-items: flex-end; /* tombol sejajar bawah input */
+  gap: 0;               /* matikan gap custom */
+}
+
+/* Di layar cukup lebar, paksa tetap satu baris */
+@media (min-width: 769px) {
+  .filter-box .row {
+    flex-wrap: nowrap;
+  }
 }
 
 /* label */
@@ -553,7 +560,6 @@ label {
   margin-bottom: 6px;
 }
 
-/* input & select */
 /* input */
 .filter-box input {
   width: 100%;
@@ -572,35 +578,33 @@ label {
   font-size: 14px;
   border: 1px solid #d1d5db;
 
-  /* hilangkan style default */
   appearance: none;
   -webkit-appearance: none;
   -moz-appearance: none;
 
-  /* bikin teks + icon terasa di tengah */
   text-align: center;
   text-align-last: center;
 
   padding-left: 18px;
-  padding-right: 42px; /* ruang panah */
+  padding-right: 42px;
 
   background-color: #fff;
 
-  /* custom arrow */
   background-image: url("data:image/svg+xml;utf8,<svg fill='%2364748b' height='18' viewBox='0 0 20 20' width='18' xmlns='http://www.w3.org/2000/svg'><path d='M5.5 7.5l4.5 5 4.5-5z'/></svg>");
   background-repeat: no-repeat;
   background-position: center right 14px;
   background-size: 16px;
 }
 
-/* option tetap kiri biar readable */
 .filter-box select option {
   text-align: left;
 }
 
-/* tombol */
+/* tombol: override .btn global yang punya margin-top */
 .filter-box .btn {
+  margin-top: 0 !important; /* ini bikin sejajar di semua device */
   height: 46px;
+  width: 100%;
   border-radius: 16px;
   font-weight: 800;
   letter-spacing: 0.3px;
@@ -615,139 +619,4 @@ label {
   .filter-floating {
     margin-top: -55px;
   }
-}
-
-/* ================= AUTO RESPONSIVE ROOM GRID ================= */
-/* ================= LOCK 4 COLUMN GRID ================= */
-.room-section{
-  padding-top:10px;   /* kamu bisa ubah 0 / 10 / 20 sesuai rasa */
-  padding-bottom:40px;
-}
-
-.room-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 42px;
-  margin-top: 40px;
-}
-
-/* tablet */
-@media (max-width: 1100px) {
-  .room-grid {
-    grid-template-columns: repeat(3, 1fr);
-  }
-}
-
-/* hp */
-@media (max-width: 768px) {
-  .room-grid {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 24px;
-  }
-}
-
-/* kecil */
-@media (max-width: 480px) {
-  .room-grid {
-    grid-template-columns: 1fr;
-  }
-}
-
-/* CARD */
-.room-card {
-  background: rgba(255, 255, 255, 0.96);
-  border-radius: 20px;
-  overflow: hidden;
-  border: 1px solid rgba(255, 255, 255, 0.65);
-  backdrop-filter: blur(8px);
-  transition: 0.25s;
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.28);
-}
-
-.room-card:hover {
-  transform: translateY(-8px) scale(1.02);
-}
-
-/* IMAGE RATIO FIX */
-.room-img {
-  width: 100%;
-  aspect-ratio: 16/9;
-  overflow: hidden;
-}
-
-.room-img img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  transition: 0.35s;
-}
-
-.room-card:hover img {
-  transform: scale(1.08);
-}
-
-/* BODY */
-.room-body {
-  padding: 12px 14px 14px;
-  gap: 6px;
-  display: flex;
-  flex-direction: column;
-  flex: 1;
-}
-
-.room-title {
-  font-weight: 900;
-  color: #16a34a;
-  font-size: 17px;
-  margin-bottom: 4px;
-}
-
-.room-meta {
-  font-size: 14px;
-  color: #475569;
-  line-height: 1.5;
-  margin-bottom: auto;
-}
-
-.room-title {
-  margin-bottom: 2px;
-}
-
-.room-meta {
-  margin-bottom: 12px;
-}
-
-/* BUTTON */
-/* ================= ROOM BUTTON FIX ================= */
-.room-btn {
-  display: block;
-  text-align: center;
-  padding: 11px 14px;
-  border-radius: 12px;
-  font-weight: 800;
-  font-size: 14px;
-  text-decoration: none;
-
-  background: linear-gradient(180deg, #22c55e, #16a34a);
-  color: #ffffff !important;
-
-  box-shadow: 0 8px 20px rgba(34, 197, 94, 0.35);
-  transition: 0.2s;
-}
-
-.room-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 12px 28px rgba(34, 197, 94, 0.45);
-  color: #fff !important;
-}
-
-.room-btn {
-  color: #fff !important;
-}
-
-.room-btn:visited {
-  color: #fff !important;
 }
