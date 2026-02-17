@@ -100,6 +100,8 @@ else if ($action === 'edit') {
         $gedung = $_POST['gedung'] ?? '';
         $kapasitas = $_POST['kapasitas'] ?? null;
         $deskripsi = $_POST['deskripsi'] ?? '';
+        $is_active = isset($_POST['is_active']) ? (int)$_POST['is_active'] : 1;
+        if ($is_active !== 0 && $is_active !== 1) $is_active = 1;
 
         if (empty($id) || empty($nama_ruangan)) {
             throw new Exception("Data tidak valid");
@@ -145,9 +147,12 @@ else if ($action === 'edit') {
 
         // Update database
         query(
-            "UPDATE ruangan SET nama_ruangan = ?, gedung = ?, kapasitas = ?, deskripsi = ?, foto = ? WHERE id = ?",
-            [$nama_ruangan, $gedung, $kapasitas, $deskripsi, $fotoName, $id]
+        "UPDATE ruangan 
+        SET nama_ruangan = ?, gedung = ?, kapasitas = ?, deskripsi = ?, foto = ?, is_active = ?
+        WHERE id = ?",
+        [$nama_ruangan, $gedung, $kapasitas, $deskripsi, $fotoName, $is_active, $id]
         );
+
 
         header("Location: ruangan.php?success=edit");
         exit;
@@ -167,7 +172,7 @@ else if ($action === 'delete') {
         }
 
         // Get ruangan
-        $stmt = query("SELECT * FROM ruangan WHERE id = ?", [$id]);
+        $stmt = query("SELECT * FROM ruangan ORDER BY is_active DESC, nama_ruangan ASC");
         $ruangan = $stmt->fetch();
 
         if (!$ruangan) {

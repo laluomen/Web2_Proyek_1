@@ -74,11 +74,12 @@ require_once __DIR__ . "/../templates/admin_sidebar.php";
             <table class="table table-hover">
                 <thead class="table-light">
                     <tr>
-                        <th width="5%">#</th>
+                        <th width="5%">No</th>
                         <th width="25%">Nama Ruangan</th>
                         <th width="20%">Gedung</th>
                         <th width="15%">Kapasitas</th>
                         <th width="15%">Foto</th>
+                        <th width="15%">Status</th>
                         <th width="20%">Aksi</th>
                     </tr>
                 </thead>
@@ -103,11 +104,26 @@ require_once __DIR__ . "/../templates/admin_sidebar.php";
                                         <span class="text-muted">-</span>
                                     <?php endif; ?>
                                 </td>
+
+
+                                <td>
+                                    <?php if ($ruangan['is_active']): ?>
+                                        <span class="badge bg-success">Aktif</span>
+                                    <?php else: ?>
+                                        <span class="badge bg-secondary">Tidak Aktif</span>
+                                    <?php endif; ?>
                                 <td>
                                     <button class="btn btn-sm btn-warning" 
                                             data-bs-toggle="modal" 
                                             data-bs-target="#modalEditRuangan"
-                                            onclick="editRuangan(<?= $ruangan['id'] ?>, '<?= htmlspecialchars($ruangan['nama_ruangan']) ?>', '<?= htmlspecialchars($ruangan['gedung'] ?? '') ?>', <?= $ruangan['kapasitas'] ?>, '<?= htmlspecialchars($ruangan['deskripsi'] ?? '') ?>')">
+                                            onclick="editRuangan(
+                                            <?= (int)$ruangan['id'] ?>,
+                                            '<?= htmlspecialchars($ruangan['nama_ruangan'], ENT_QUOTES) ?>',
+                                            '<?= htmlspecialchars($ruangan['gedung'] ?? '', ENT_QUOTES) ?>',
+                                            <?= (int)($ruangan['kapasitas'] ?? 0) ?>,
+                                            '<?= htmlspecialchars($ruangan['deskripsi'] ?? '', ENT_QUOTES) ?>',
+                                            <?= (int)$ruangan['is_active'] ?>
+                                            )">
                                         Edit
                                     </button>
                                     <button class="btn btn-sm btn-danger" 
@@ -163,6 +179,15 @@ require_once __DIR__ . "/../templates/admin_sidebar.php";
                         <input type="file" class="form-control" name="foto" accept="image/*">
                         <small class="text-muted">Format: JPG, PNG, GIF (Max 2MB)</small>
                     </div>
+                    <div class="mb-3">
+                    <label class="form-label">Status Ruangan</label>
+                    <select class="form-select" name="is_active" id="editIsActive">
+                        <option value="1">Aktif</option>
+                        <option value="0">Nonaktif</option>
+                    </select>
+                    </div>
+
+
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
@@ -213,7 +238,13 @@ require_once __DIR__ . "/../templates/admin_sidebar.php";
                         <div class="mt-2">
                             <img id="editFotoPreview" src="" alt="Foto Preview" style="max-width: 100%; max-height: 200px; display: none; border-radius: 4px;">
                         </div>
-                    </div>
+                        <div class="mb-3">
+                            <label class="form-label">Status Ruangan</label>
+                            <select class="form-select" name="is_active" id="editIsActive">
+                                <option value="1">Aktif</option>
+                                <option value="0">Nonaktif</option>
+                            </select>
+                        </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
@@ -232,6 +263,8 @@ function editRuangan(id, nama, gedung, kapasitas, deskripsi) {
     document.getElementById('editGedung').value = gedung;
     document.getElementById('editKapasitas').value = kapasitas;
     document.getElementById('editDeskripsi').value = deskripsi;
+
+    document.getElementById('editIsActive').value = is_active;
 }
 </script>
 

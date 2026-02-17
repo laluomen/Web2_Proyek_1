@@ -39,7 +39,7 @@ if ($tgl_awal && $tgl_akhir) {
    $params[] = $tgl_akhir;
 }
 
-$sql = "SELECT * FROM ruangan";
+$sql = $sql = "SELECT * FROM ruangan WHERE is_active = 1";
 if ($where)
    $sql .= " WHERE " . implode(" AND ", $where);
 $sql .= " ORDER BY nama_ruangan";

@@ -250,3 +250,7 @@ VALUES ('Ruang 111', 'Gedung B', 30, 'ruang111.jpg');
 
 INSERT INTO ruangan (nama_ruangan, gedung, kapasitas, foto)
 VALUES ('Ruang 112', 'Gedung B', 40, 'ruang112.jpg');
+
+
+ALTER TABLE ruangan
+ADD COLUMN is_active TINYINT(1) NOT NULL DEFAULT 1;
