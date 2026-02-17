@@ -15,7 +15,6 @@ $activeNav = $activeNav ?? "home";
 $L = [
   "home" => $BASE . "mahasiswa/dashboard.php",
   "ruangan" => $BASE . "mahasiswa/ruangan.php",
-  "status" => $BASE . "mahasiswa/status_ruangan.php",
   "peminjaman" => $BASE . "mahasiswa/peminjaman.php",
   "login" => $BASE . "auth/login.php",
   "logout" => $BASE . "auth/logout.php",
@@ -51,7 +50,6 @@ function active(string $key, string $activeNav): string
       <nav class="mainmenu" aria-label="Primary">
         <a class="<?= active('home', $activeNav) ?>" href="<?= $L['home'] ?>">Home</a>
         <a class="<?= active('ruangan', $activeNav) ?>" href="<?= $L['ruangan'] ?>">Ruangan</a>
-        <a class="<?= active('status', $activeNav) ?>" href="<?= $L['status'] ?>">Status Ruangan</a>
         <a class="<?= active('peminjaman', $activeNav) ?>" href="<?= $L['peminjaman'] ?>">Peminjaman</a>
         <?php if (!empty($_SESSION['role'])): ?>
           <a href="<?= $L['logout'] ?>">Logout</a>
@@ -74,7 +72,6 @@ function active(string $key, string $activeNav): string
       <div class="mobilePanel" id="mobileMenu" role="menu">
         <a class="<?= active('home', $activeNav) ?>" href="<?= $L['home'] ?>" role="menuitem">Home</a>
         <a class="<?= active('ruangan', $activeNav) ?>" href="<?= $L['ruangan'] ?>" role="menuitem">Ruangan</a>
-        <a class="<?= active('status', $activeNav) ?>" href="<?= $L['status'] ?>" role="menuitem">Status Ruangan</a>
         <a class="<?= active('peminjaman', $activeNav) ?>" href="<?= $L['peminjaman'] ?>" role="menuitem">Peminjaman</a>
         <a class="<?= active('login', $activeNav) ?>" href="<?= $L['login'] ?>" role="menuitem">Login</a>
       </div>

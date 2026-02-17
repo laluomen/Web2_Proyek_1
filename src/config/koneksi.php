@@ -3,6 +3,8 @@ if (session_status() === PHP_SESSION_NONE){
      session_start();
 }
 
+date_default_timezone_set('Asia/Jakarta');
+
 // ===== BASE URL (single source of truth) =====
 // Hasil contoh: /web2/projek/Web2_Proyek_1/src/
 $scriptName = str_replace('\\', '/', $_SERVER['SCRIPT_NAME'] ?? '');
@@ -50,6 +52,26 @@ function query(string $sql, array $params = []): PDOStatement {
     $stmt = db()->prepare($sql);
     $stmt->execute($params);
     return $stmt;
+}
+
+/**
+ * Otomatis ubah status peminjaman yang sudah lewat menjadi "Selesai"
+ * Aturan: hanya yang statusnya Disetujui (2) -> Selesai (4)
+ */
+function autoMarkSelesai(): void {
+    $today = date('Y-m-d');
+    $now   = date('H:i:s');
+
+    query(
+        "UPDATE peminjaman
+         SET status_id = 4
+         WHERE status_id = 2
+           AND (
+                tanggal < ?
+                OR (tanggal = ? AND jam_selesai <= ?)
+           )",
+        [$today, $today, $now]
+    );
 }
 
 function e($value): string {
