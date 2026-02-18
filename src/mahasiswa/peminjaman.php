@@ -217,12 +217,13 @@ require_once __DIR__ . "/../templates/header.php";
                         <th>Jam</th>
                         <th>Kegiatan</th>
                         <th>Status</th>
+                        <th style="min-width:220px;">Catatan Admin</th>
                         <th class="text-center" style="min-width: 140px;">Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
                 <?php if (!$riwayat): ?>
-                    <tr><td colspan="7" class="text-center">Belum ada pengajuan.</td></tr>
+                    <tr><td colspan="8" class="text-center">Belum ada pengajuan.</td></tr>
                 <?php else: ?>
                     <?php foreach ($riwayat as $i => $p): ?>
                         <tr>
@@ -232,6 +233,13 @@ require_once __DIR__ . "/../templates/header.php";
                             <td><?= e(substr($p['jam_mulai'],0,5) . ' - ' . substr($p['jam_selesai'],0,5)) ?></td>
                             <td><?= e($p['nama_kegiatan']) ?></td>
                             <td><?= e($p['nama_status']) ?></td>
+                            <td>
+                                <?php if (!empty($p['catatan_admin'])): ?>
+                                    <?= e($p['catatan_admin']) ?>
+                                <?php else: ?>
+                                    <span class="text-muted">-</span>
+                                <?php endif; ?>
+                            </td>
                             <td class="text-center" style="overflow:hidden;">
                                 <?php if ((int)$p['status_id'] === 1): ?>
                                     <form method="POST" onsubmit="return confirm('Batalkan pengajuan ini?');" style="display:inline-block; max-width:100%;">
