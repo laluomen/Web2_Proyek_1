@@ -59,7 +59,8 @@ require_once __DIR__ . "/../templates/admin_sidebar.php";
 
     <!-- Card Tabel Ruangan -->
     <div class="card shadow border-0" style="border-radius: 15px; overflow: hidden;">
-        <div class="card-header bg-white py-3 border-bottom" style="background: linear-gradient(to right, #f8f9fa, #e9ecef) !important;">
+        <div class="card-header bg-white py-3 border-bottom"
+            style="background: linear-gradient(to right, #f8f9fa, #e9ecef) !important;">
             <div class="row align-items-center">
                 <div class="col-md-6">
                     <h5 class="mb-0 fw-bold" style="color: #495057;">
@@ -117,25 +118,32 @@ require_once __DIR__ . "/../templates/admin_sidebar.php";
                             <?php foreach ($ruangans as $i => $ruangan): ?>
                                 <tr>
                                     <td class="text-center">
-                                        <span class="badge bg-secondary bg-opacity-75" style="font-size: 0.9rem; padding: 0.4rem 0.7rem;">
+                                        <span class="badge-number">
                                             <?= $i + 1 ?>
                                         </span>
+
                                     </td>
                                     <td>
-                                        <div class="fw-bold text-dark" style="font-size: 1rem;"><?= htmlspecialchars($ruangan['nama_ruangan']) ?></div>
+                                        <div class="fw-bold text-dark" style="font-size: 1rem;">
+                                            <?= htmlspecialchars($ruangan['nama_ruangan']) ?>
+                                        </div>
                                         <?php if (!empty($ruangan['deskripsi'])): ?>
                                             <small class="text-muted" style="font-size: 0.85rem;">
-                                                <i class="bi bi-info-circle me-1"></i><?= htmlspecialchars(substr($ruangan['deskripsi'], 0, 50)) ?><?= strlen($ruangan['deskripsi']) > 50 ? '...' : '' ?>
+                                                <i
+                                                    class="bi bi-info-circle me-1"></i><?= htmlspecialchars(substr($ruangan['deskripsi'], 0, 50)) ?><?= strlen($ruangan['deskripsi']) > 50 ? '...' : '' ?>
                                             </small>
                                         <?php endif; ?>
                                     </td>
                                     <td>
-                                        <span class="badge px-3 py-2" style="background: linear-gradient(135deg, #17a2b8, #138496); color: white; font-weight: 600; border-radius: 8px;">
-                                            <i class="bi bi-building-fill me-1"></i><?= htmlspecialchars($ruangan['gedung'] ?? '-') ?>
+                                        <span class="badge px-3 py-2"
+                                            style="background: linear-gradient(135deg, #17a2b8, #138496); color: white; font-weight: 600; border-radius: 8px;">
+                                            <i
+                                                class="bi bi-building-fill me-1"></i><?= htmlspecialchars($ruangan['gedung'] ?? '-') ?>
                                         </span>
                                     </td>
                                     <td class="text-center">
-                                        <span class="badge px-3 py-2" style="background: linear-gradient(135deg, #22c55e, #16a34a); color: white; font-weight: 600; border-radius: 8px;">
+                                        <span class="badge px-3 py-2"
+                                            style="background: linear-gradient(135deg, #22c55e, #16a34a); color: white; font-weight: 600; border-radius: 8px;">
                                             <i class="bi bi-people-fill me-1"></i><?= $ruangan['kapasitas'] ?? '0' ?> orang
                                         </span>
                                     </td>
@@ -145,8 +153,7 @@ require_once __DIR__ . "/../templates/admin_sidebar.php";
                                                 alt="<?= htmlspecialchars($ruangan['nama_ruangan']) ?>"
                                                 class="rounded shadow-sm img-thumbnail"
                                                 style="width: 80px; height: 55px; object-fit: cover; cursor: pointer;"
-                                                data-bs-toggle="modal"
-                                                data-bs-target="#modalViewImage"
+                                                data-bs-toggle="modal" data-bs-target="#modalViewImage"
                                                 onclick="viewImage('../uploads/ruangan/<?= htmlspecialchars($ruangan['foto']) ?>', '<?= htmlspecialchars($ruangan['nama_ruangan']) ?>')">
                                         <?php else: ?>
                                             <span class="badge bg-secondary bg-opacity-10 text-secondary">
@@ -156,20 +163,16 @@ require_once __DIR__ . "/../templates/admin_sidebar.php";
                                     </td>
                                     <td>
                                         <div class="d-flex gap-1 justify-content-center">
-                                            <button class="btn btn-info btn-sm text-white px-2"
-                                                style="min-width: 65px; font-size: 0.8rem;"
+                                            <button class="btn btn-info aksi-btn" style="min-width: 65px; font-size: 0.8rem;"
                                                 onclick="viewDetail(<?= $ruangan['id'] ?>, '<?= htmlspecialchars($ruangan['nama_ruangan']) ?>', '<?= htmlspecialchars($ruangan['gedung'] ?? '') ?>', <?= $ruangan['kapasitas'] ?>, '<?= htmlspecialchars($ruangan['deskripsi'] ?? '') ?>', '<?= htmlspecialchars($ruangan['foto'] ?? '') ?>')">
                                                 <i class="bi bi-eye-fill me-1"></i>Detail
                                             </button>
-                                            <button class="btn btn-warning btn-sm text-white px-2"
-                                                style="min-width: 60px; font-size: 0.8rem;"
-                                                data-bs-toggle="modal"
-                                                data-bs-target="#modalEditRuangan"
+                                            <button class="btn btn-warning aksi-btn" style="min-width: 60px; font-size: 0.8rem;"
+                                                data-bs-toggle="modal" data-bs-target="#modalEditRuangan"
                                                 onclick="editRuangan(<?= $ruangan['id'] ?>, '<?= htmlspecialchars($ruangan['nama_ruangan']) ?>', '<?= htmlspecialchars($ruangan['gedung'] ?? '') ?>', <?= $ruangan['kapasitas'] ?>, '<?= htmlspecialchars($ruangan['deskripsi'] ?? '') ?>')">
                                                 <i class="bi bi-pencil-fill me-1"></i>Edit
                                             </button>
-                                            <button class="btn btn-danger btn-sm px-2"
-                                                style="min-width: 65px; font-size: 0.8rem;"
+                                            <button class="btn btn-danger aksi-btn" style="min-width: 65px; font-size: 0.8rem;"
                                                 onclick="deleteRuangan(<?= $ruangan['id'] ?>, '<?= htmlspecialchars($ruangan['nama_ruangan']) ?>')">
                                                 <i class="bi bi-trash-fill me-1"></i>Hapus
                                             </button>
@@ -186,7 +189,9 @@ require_once __DIR__ . "/../templates/admin_sidebar.php";
             <div class="d-flex justify-content-between align-items-center">
                 <small class="text-muted fw-semibold">
                     <i class="bi bi-info-circle-fill me-1" style="color: #22c55e;"></i>Total Data:
-                    <span class="badge ms-1" style="background: linear-gradient(135deg, #22c55e, #16a34a);"><?= count($ruangans) ?></span> ruangan terdaftar
+                    <span class="badge ms-1"
+                        style="background: linear-gradient(135deg, #22c55e, #16a34a);"><?= count($ruangans) ?></span>
+                    ruangan terdaftar
                 </small>
                 <small class="text-muted">
                     <i class="bi bi-calendar-check me-1"></i><?= date('d F Y') ?>
@@ -203,7 +208,8 @@ require_once __DIR__ . "/../templates/admin_sidebar.php";
 <div class="modal fade" id="modalAddRuangan" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content border-0 shadow-lg" style="border-radius: 15px; overflow: hidden;">
-            <div class="modal-header text-white" style="background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%); border: none;">
+            <div class="modal-header text-white"
+                style="background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%); border: none;">
                 <h5 class="modal-title fw-bold">
                     <i class="bi bi-plus-circle-fill me-2"></i>Tambah Ruangan Baru
                 </h5>
@@ -227,8 +233,7 @@ require_once __DIR__ . "/../templates/admin_sidebar.php";
                             <label class="form-label fw-semibold">
                                 <i class="bi bi-building me-1" style="color: #22c55e;"></i>Gedung
                             </label>
-                            <input type="text" class="form-control" name="gedung"
-                                placeholder="Contoh: Gedung A">
+                            <input type="text" class="form-control" name="gedung" placeholder="Contoh: Gedung A">
                         </div>
                     </div>
 
@@ -237,8 +242,8 @@ require_once __DIR__ . "/../templates/admin_sidebar.php";
                             <i class="bi bi-people me-1" style="color: #22c55e;"></i>Kapasitas
                         </label>
                         <div class="input-group">
-                            <input type="number" class="form-control" name="kapasitas"
-                                placeholder="Jumlah orang" min="1">
+                            <input type="number" class="form-control" name="kapasitas" placeholder="Jumlah orang"
+                                min="1">
                             <span class="input-group-text">
                                 <i class="bi bi-person-fill"></i> orang
                             </span>
@@ -257,22 +262,24 @@ require_once __DIR__ . "/../templates/admin_sidebar.php";
                         <label class="form-label fw-semibold">
                             <i class="bi bi-image me-1" style="color: #22c55e;"></i>Foto Ruangan
                         </label>
-                        <input type="file" class="form-control" name="foto" accept="image/*"
-                            id="addFotoInput" onchange="previewAddImage(event)">
+                        <input type="file" class="form-control" name="foto" accept="image/*" id="addFotoInput"
+                            onchange="previewAddImage(event)">
                         <small class="text-muted">
                             <i class="bi bi-info-circle me-1"></i>Format: JPG, PNG, GIF (Max 2MB)
                         </small>
                         <div class="mt-3" id="addImagePreviewContainer" style="display: none;">
-                            <img id="addImagePreview" src="" alt="Preview"
-                                class="img-thumbnail rounded" style="max-height: 200px;">
+                            <img id="addImagePreview" src="" alt="Preview" class="img-thumbnail rounded"
+                                style="max-height: 200px;">
                         </div>
                     </div>
                 </div>
                 <div class="modal-footer bg-light border-0">
-                    <button type="button" class="btn text-white" data-bs-dismiss="modal" style="background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); border: none; border-radius: 8px; padding: 10px 24px; font-weight: 600;">
+                    <button type="button" class="btn text-white" data-bs-dismiss="modal"
+                        style="background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); border: none; border-radius: 8px; padding: 10px 24px; font-weight: 600;">
                         <i class="bi bi-x-circle me-1"></i>Batal
                     </button>
-                    <button type="submit" class="btn text-white" style="background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%); border: none; border-radius: 8px; padding: 10px 24px; font-weight: 600;">
+                    <button type="submit" class="btn text-white"
+                        style="background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%); border: none; border-radius: 8px; padding: 10px 24px; font-weight: 600;">
                         <i class="bi bi-save me-1"></i>Simpan Ruangan
                     </button>
                 </div>
@@ -285,7 +292,8 @@ require_once __DIR__ . "/../templates/admin_sidebar.php";
 <div class="modal fade" id="modalEditRuangan" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content border-0 shadow-lg" style="border-radius: 15px; overflow: hidden;">
-            <div class="modal-header text-white" style="background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%); border: none;">
+            <div class="modal-header text-white"
+                style="background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%); border: none;">
                 <h5 class="modal-title fw-bold">
                     <i class="bi bi-pencil-square me-2"></i>Edit Ruangan
                 </h5>
@@ -302,8 +310,7 @@ require_once __DIR__ . "/../templates/admin_sidebar.php";
                                 <i class="bi bi-door-closed me-1" style="color: #f59e0b;"></i>Nama Ruangan
                                 <span class="text-danger">*</span>
                             </label>
-                            <input type="text" class="form-control" name="nama_ruangan"
-                                id="editNamaRuangan" required>
+                            <input type="text" class="form-control" name="nama_ruangan" id="editNamaRuangan" required>
                         </div>
 
                         <div class="col-md-6 mb-3">
@@ -319,8 +326,7 @@ require_once __DIR__ . "/../templates/admin_sidebar.php";
                             <i class="bi bi-people me-1" style="color: #f59e0b;"></i>Kapasitas
                         </label>
                         <div class="input-group">
-                            <input type="number" class="form-control" name="kapasitas"
-                                id="editKapasitas" min="1">
+                            <input type="number" class="form-control" name="kapasitas" id="editKapasitas" min="1">
                             <span class="input-group-text">
                                 <i class="bi bi-person-fill"></i> orang
                             </span>
@@ -338,22 +344,24 @@ require_once __DIR__ . "/../templates/admin_sidebar.php";
                         <label class="form-label fw-semibold">
                             <i class="bi bi-image me-1" style="color: #f59e0b;"></i>Foto Ruangan
                         </label>
-                        <input type="file" class="form-control" name="foto" accept="image/*"
-                            id="editFotoFile" onchange="previewEditImage(event)">
+                        <input type="file" class="form-control" name="foto" accept="image/*" id="editFotoFile"
+                            onchange="previewEditImage(event)">
                         <small class="text-muted">
                             <i class="bi bi-info-circle me-1"></i>Kosongkan jika tidak ingin mengubah foto
                         </small>
                         <div class="mt-3" id="editImagePreviewContainer" style="display: none;">
-                            <img id="editFotoPreview" src="" alt="Foto Preview"
-                                class="img-thumbnail rounded" style="max-height: 200px;">
+                            <img id="editFotoPreview" src="" alt="Foto Preview" class="img-thumbnail rounded"
+                                style="max-height: 200px;">
                         </div>
                     </div>
                 </div>
                 <div class="modal-footer bg-light border-0">
-                    <button type="button" class="btn text-white" data-bs-dismiss="modal" style="background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); border: none; border-radius: 8px; padding: 10px 24px; font-weight: 600;">
+                    <button type="button" class="btn text-white" data-bs-dismiss="modal"
+                        style="background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); border: none; border-radius: 8px; padding: 10px 24px; font-weight: 600;">
                         <i class="bi bi-x-circle me-1"></i>Batal
                     </button>
-                    <button type="submit" class="btn text-white" style="background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%); border: none; border-radius: 8px; padding: 10px 24px; font-weight: 600;">
+                    <button type="submit" class="btn text-white"
+                        style="background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%); border: none; border-radius: 8px; padding: 10px 24px; font-weight: 600;">
                         <i class="bi bi-check-circle me-1"></i>Update Ruangan
                     </button>
                 </div>
@@ -366,7 +374,8 @@ require_once __DIR__ . "/../templates/admin_sidebar.php";
 <div class="modal fade" id="modalViewDetail" tabindex="-1">
     <div class="modal-dialog modal-dialog-centered modal-lg">
         <div class="modal-content border-0 shadow-lg" style="border-radius: 15px; overflow: hidden;">
-            <div class="modal-header text-white" style="background: linear-gradient(135deg, #0dcaf0 0%, #0aa2c0 100%); border: none;">
+            <div class="modal-header text-white"
+                style="background: linear-gradient(135deg, #0dcaf0 0%, #0aa2c0 100%); border: none;">
                 <h5 class="modal-title fw-bold">
                     <i class="bi bi-eye-fill me-2"></i>Detail Ruangan
                 </h5>
@@ -399,8 +408,8 @@ require_once __DIR__ . "/../templates/admin_sidebar.php";
                             <i class="bi bi-image me-1"></i>Foto Ruangan
                         </label>
                         <div id="detailFotoContainer">
-                            <img id="detailFoto" src="" alt="Foto Ruangan"
-                                class="img-fluid rounded shadow-sm" style="max-height: 250px; width: 100%; object-fit: cover;">
+                            <img id="detailFoto" src="" alt="Foto Ruangan" class="img-fluid rounded shadow-sm"
+                                style="max-height: 250px; width: 100%; object-fit: cover;">
                         </div>
                     </div>
                 </div>
@@ -412,7 +421,8 @@ require_once __DIR__ . "/../templates/admin_sidebar.php";
                 </div>
             </div>
             <div class="modal-footer bg-light border-0">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal" style="border-radius: 8px; padding: 10px 24px;">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal"
+                    style="border-radius: 8px; padding: 10px 24px;">
                     <i class="bi bi-x-circle me-1"></i>Tutup
                 </button>
             </div>
@@ -440,15 +450,15 @@ require_once __DIR__ . "/../templates/admin_sidebar.php";
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script>
     // Initialize Bootstrap tooltips
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function () {
         var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-        var tooltipList = tooltipTriggerList.map(function(tooltipTriggerEl) {
+        var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
             return new bootstrap.Tooltip(tooltipTriggerEl);
         });
     });
 
     // Search functionality
-    document.getElementById('searchInput').addEventListener('keyup', function() {
+    document.getElementById('searchInput').addEventListener('keyup', function () {
         const searchValue = this.value.toLowerCase();
         const tableRows = document.querySelectorAll('#tableRuangan tbody tr');
 
@@ -467,7 +477,7 @@ require_once __DIR__ . "/../templates/admin_sidebar.php";
         const file = event.target.files[0];
         if (file) {
             const reader = new FileReader();
-            reader.onload = function(e) {
+            reader.onload = function (e) {
                 document.getElementById('addImagePreview').src = e.target.result;
                 document.getElementById('addImagePreviewContainer').style.display = 'block';
             };
@@ -480,7 +490,7 @@ require_once __DIR__ . "/../templates/admin_sidebar.php";
         const file = event.target.files[0];
         if (file) {
             const reader = new FileReader();
-            reader.onload = function(e) {
+            reader.onload = function (e) {
                 document.getElementById('editFotoPreview').src = e.target.result;
                 document.getElementById('editImagePreviewContainer').style.display = 'block';
             };
@@ -534,16 +544,16 @@ require_once __DIR__ . "/../templates/admin_sidebar.php";
     }
 
     // Reset add form when modal is closed
-    document.getElementById('modalAddRuangan').addEventListener('hidden.bs.modal', function() {
+    document.getElementById('modalAddRuangan').addEventListener('hidden.bs.modal', function () {
         this.querySelector('form').reset();
         document.getElementById('addImagePreviewContainer').style.display = 'none';
     });
 
     // Auto-dismiss alerts after 5 seconds
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function () {
         const alerts = document.querySelectorAll('.alert:not(.alert-permanent)');
-        alerts.forEach(function(alert) {
-            setTimeout(function() {
+        alerts.forEach(function (alert) {
+            setTimeout(function () {
                 const bsAlert = new bootstrap.Alert(alert);
                 bsAlert.close();
             }, 5000);
@@ -552,336 +562,157 @@ require_once __DIR__ . "/../templates/admin_sidebar.php";
 </script>
 
 <style>
-    /* Kelola Header Styling */
+    /* ================= HEADER ================= */
     .kelola-header {
-        background: linear-gradient(135deg, #2d3748 0%, #1a202c 100%);
+        background: linear-gradient(135deg, #2d3748, #1a202c);
         border-radius: 16px;
-        padding: 28px 40px;
+        padding: 26px 34px;
         display: flex;
         justify-content: space-between;
         align-items: center;
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
-        border: 1px solid rgba(255, 255, 255, 0.1);
+        box-shadow: 0 6px 24px rgba(0, 0, 0, .25);
+        border: 1px solid rgba(255, 255, 255, .08);
     }
 
     .kelola-header h1 {
         margin: 0;
-        color: #ffffff;
-        font-size: 32px;
+        color: #fff;
+        font-size: 30px;
         font-weight: 700;
-        letter-spacing: -0.5px;
     }
 
     .btn-tambah {
-        background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
-        color: #ffffff;
+        background: linear-gradient(135deg, #22c55e, #16a34a);
+        color: #fff;
         border: none;
         border-radius: 10px;
-        padding: 12px 32px;
-        font-size: 16px;
+        padding: 12px 30px;
         font-weight: 600;
-        cursor: pointer;
-        transition: all 0.3s ease;
-        box-shadow: 0 4px 12px rgba(34, 197, 94, 0.3);
+        transition: .25s;
     }
 
     .btn-tambah:hover {
-        background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
         transform: translateY(-2px);
-        box-shadow: 0 6px 16px rgba(34, 197, 94, 0.4);
+        box-shadow: 0 8px 18px rgba(34, 197, 94, .35);
     }
 
-    .btn-tambah:active {
-        transform: translateY(0);
+    /* ================= TABLE ================= */
+
+    #tableRuangan {
+        border-collapse: separate;
+        border-spacing: 0;
     }
 
-    /* Custom styles for enhanced appearance */
-    .card {
-        transition: all 0.3s ease;
+    #tableRuangan thead th {
+        font-size: 12px;
+        letter-spacing: .6px;
+        color: #475569;
+        border-bottom: 1px solid #e5e7eb;
+        background: linear-gradient(to right, #f8fafc, #eef2f7);
     }
 
-    /* Override Bootstrap primary color to match theme */
-    .text-primary {
-        color: #22c55e !important;
-    }
-
-    .bg-primary {
-        background-color: #22c55e !important;
-    }
-
-    .btn-primary {
-        background: linear-gradient(135deg, #22c55e, #16a34a);
-        border: none;
-    }
-
-    .btn-primary:hover {
-        background: linear-gradient(135deg, #16a34a, #15803d);
-    }
-
-    .badge.bg-primary {
-        background: linear-gradient(135deg, #22c55e, #16a34a) !important;
-    }
-
-    .table tbody tr {
-        transition: all 0.2s ease;
-    }
-
-    .table tbody tr:hover {
-        background-color: #f8f9fa;
-        transform: scale(1.001);
-    }
-
-    .img-thumbnail:hover {
-        transform: scale(1.08);
-        transition: all 0.3s ease;
-        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-    }
-
-    .modal-content {
-        border-radius: 15px;
-    }
-
-    .badge {
-        font-weight: 500;
-        font-size: 0.85rem;
-    }
-
-    /* Action Buttons Styling */
-    .btn-sm {
-        padding: 0.35rem 0.6rem;
-        font-size: 0.8rem;
-        border-radius: 6px;
-        font-weight: 600;
-        transition: all 0.3s ease;
-        white-space: nowrap;
-        border: none;
-    }
-
-    .btn-sm i {
-        font-size: 0.85rem;
-    }
-
-    .btn-info {
-        background: linear-gradient(135deg, #0dcaf0 0%, #0aa2c0 100%);
-    }
-
-    .btn-info:hover {
-        background: linear-gradient(135deg, #0aa2c0 0%, #088ba8 100%);
-        transform: translateY(-2px);
-        box-shadow: 0 5px 12px rgba(13, 202, 240, 0.4);
-    }
-
-    .btn-warning {
-        background: linear-gradient(135deg, #ffc107 0%, #ff9800 100%);
-    }
-
-    .btn-warning:hover {
-        background: linear-gradient(135deg, #ff9800 0%, #f57c00 100%);
-        transform: translateY(-2px);
-        box-shadow: 0 5px 12px rgba(255, 193, 7, 0.4);
-    }
-
-    .btn-danger {
-        background: linear-gradient(135deg, #dc3545 0%, #c82333 100%);
-    }
-
-    .btn-danger:hover {
-        background: linear-gradient(135deg, #c82333 0%, #bd2130 100%);
-        transform: translateY(-2px);
-        box-shadow: 0 5px 12px rgba(220, 53, 69, 0.4);
-    }
-
-    .d-flex.gap-1 {
-        gap: 0.25rem !important;
-    }
-
-    .form-control:focus,
-    .form-select:focus {
-        border-color: #22c55e;
-        box-shadow: 0 0 0 0.25rem rgba(34, 197, 94, 0.15);
-    }
-
-    .input-group-text {
-        background-color: #ffffff;
-        border-color: #dee2e6;
-    }
-
-    .card-header {
-        border-bottom: 2px solid #e9ecef;
-    }
-
-    .card-footer {
-        border-top: 2px solid #e9ecef;
-        background: linear-gradient(to right, #f8f9fa, #e9ecef) !important;
-    }
-
-    /* Animation for alerts */
-    .alert {
-        animation: slideInDown 0.5s ease;
-        border-radius: 10px;
-        border: none;
-    }
-
-    @keyframes slideInDown {
-        from {
-            transform: translateY(-20px);
-            opacity: 0;
-        }
-
-        to {
-            transform: translateY(0);
-            opacity: 1;
-        }
-    }
-
-    /* Table header styling */
-    thead th {
-        font-weight: 700;
-        text-transform: uppercase;
-        font-size: 0.8rem;
-        letter-spacing: 0.5px;
-        color: #495057;
-        border-bottom: 2px solid #dee2e6;
-    }
-
-    /* Table body styling */
-    tbody td {
+    #tableRuangan tbody td {
+        padding: 14px 12px;
+        border-bottom: 1px solid #eef2f7;
         vertical-align: middle;
-        padding: 1rem 0.75rem;
-        border-bottom: 1px solid #f0f0f0;
     }
 
-    tbody td:first-child {
+    /* column separator */
+    #tableRuangan th,
+    #tableRuangan td {
+        border-right: 1px solid #e5e7eb;
+    }
+
+    #tableRuangan th:last-child,
+    #tableRuangan td:last-child {
+        border-right: none;
+    }
+
+    /* ===== HOVER ROW (FIXED) ===== */
+    #tableRuangan tbody tr {
+        transition: background .15s ease;
+    }
+
+    #tableRuangan tbody tr:hover td {
+        background: #f1f5f9;
+    }
+
+    /* ================= BADGE & BUTTON ALIGNMENT (PIXEL PERFECT) ================= */
+
+    /* base height semua label */
+    #tableRuangan .badge,
+    #tableRuangan .btn,
+    .badge-number {
+        height: 34px;
+        line-height: 34px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        padding: 0 16px;
+        font-size: 13px;
         font-weight: 600;
-        color: #6c757d;
-    }
-
-    /* Empty state styling */
-    tbody .text-muted i {
-        opacity: 0.5;
-    }
-
-    /* Gradient header for main card */
-    .bg-gradient-primary {
-        background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%) !important;
-    }
-
-    /* Button hover effects for header */
-    .btn-light:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15) !important;
-        background-color: #ffffff !important;
-    }
-
-    /* Table striping alternative */
-    tbody tr:nth-child(even) {
-        background-color: #fafbfc;
-    }
-
-    /* Badge styling improvements */
-    .badge {
-        transition: all 0.3s ease;
-    }
-
-    .badge:hover {
-        transform: scale(1.05);
-    }
-
-    /* Form control enhancements */
-    .form-control,
-    .form-select {
-        border: 1px solid #dee2e6;
         border-radius: 8px;
-        padding: 0.6rem 0.75rem;
-        transition: all 0.3s ease;
     }
 
-    .form-control:hover {
-        border-color: #adb5bd;
+    /* bootstrap badge baseline correction */
+    #tableRuangan .badge {
+        transform: translateY(-1px);
     }
 
-    /* Modal animations */
-    .modal.fade .modal-dialog {
-        transition: transform 0.3s ease-out;
-        transform: scale(0.8);
+    /* nomor */
+    .badge-number {
+        width: 38px;
+        background: #9aa1a9;
+        color: #fff;
     }
 
-    .modal.show .modal-dialog {
-        transform: scale(1);
+    /* GEDUNG */
+    #tableRuangan td:nth-child(3) .badge {
+        min-width: 90px;
     }
 
-    /* Button hover effects */
-    .btn {
-        transition: all 0.3s ease;
+    /* KAPASITAS */
+    #tableRuangan td:nth-child(4) .badge {
+        min-width: 110px;
     }
 
-    .btn:active {
-        transform: scale(0.95);
+    /* tombol */
+    #tableRuangan .btn {
+        min-width: 90px;
+        box-shadow: 0 8px 18px rgba(0, 0, 0, .18);
+        transition: .2s;
+        color: #fff;
     }
 
-    /* Image thumbnail styling */
-    .img-thumbnail {
-        border: 2px solid #dee2e6;
-        transition: all 0.3s ease;
+    /* warna tombol */
+    #tableRuangan .btn-info {
+        background: linear-gradient(135deg, #22b8cf, #0ea5b7) !important;
     }
 
-    /* Card shadow on hover */
-    .card:hover {
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15) !important;
+    #tableRuangan .btn-warning {
+        background: linear-gradient(135deg, #ffbe0b, #ff9800) !important;
     }
 
-    /* Scrollbar styling */
-    .table-responsive::-webkit-scrollbar {
-        height: 8px;
+    #tableRuangan .btn-danger {
+        background: linear-gradient(135deg, #ef4444, #dc2626) !important;
     }
 
-    .table-responsive::-webkit-scrollbar-track {
-        background: #f1f1f1;
-        border-radius: 10px;
+    /* hover tombol */
+    #tableRuangan .btn:hover {
+        transform: translateY(-1px);
     }
 
-    .table-responsive::-webkit-scrollbar-thumb {
-        background: linear-gradient(135deg, #22c55e, #16a34a);
-        border-radius: 10px;
+    /* hilangkan teks hitam saat hover */
+    #tableRuangan .btn-info:hover,
+    #tableRuangan .btn-info:focus,
+    #tableRuangan .btn-info:active {
+        color: #fff !important;
     }
 
-    .table-responsive::-webkit-scrollbar-thumb:hover {
-        background: linear-gradient(135deg, #16a34a, #22c55e);
-    }
-
-    /* Responsive Design for Kelola Header */
-    @media (max-width: 768px) {
-        .kelola-header {
-            flex-direction: column;
-            gap: 20px;
-            padding: 24px 28px;
-            text-align: center;
-        }
-
-        .kelola-header h1 {
-            font-size: 26px;
-        }
-
-        .btn-tambah {
-            width: 100%;
-            padding: 14px 32px;
-        }
-    }
-
-    @media (max-width: 480px) {
-        .kelola-header {
-            padding: 20px 20px;
-        }
-
-        .kelola-header h1 {
-            font-size: 22px;
-        }
-
-        .btn-tambah {
-            font-size: 14px;
-            padding: 12px 24px;
-        }
+    /* spacing tombol */
+    #tableRuangan td:last-child .d-flex {
+        gap: 10px;
+        align-items: center;
     }
 </style>
-
 <?php require_once __DIR__ . "/../templates/footer.php"; ?>
