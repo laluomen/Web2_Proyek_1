@@ -125,7 +125,7 @@ CREATE TABLE `ruangan` (
   `gedung` varchar(100) DEFAULT NULL,
   `kapasitas` int DEFAULT NULL,
   `deskripsi` text,
-  `foto` varchar(255) DEFAULT NULL,
+ 
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -267,10 +267,14 @@ CREATE TABLE ruangan_foto (
     ON UPDATE CASCADE
 );
 
-ALTER TABLE ruangan 
-ADD COLUMN is_active TINYINT(1) NOT NULL DEFAULT 1
-AFTER foto;
-
+-ALTER TABLE ruangan
+DROP COLUMN foto;
 
 ALTER TABLE ruangan 
 ADD COLUMN Lantai VARCHAR(255) NOT NULL;
+
+INSERT INTO ruangan_foto (ruangan_id, nama_file, tipe)
+VALUES 
+(2, 'ruang102_detail1.jpg', 'detail'),
+(2, 'ruang102_detail2.jpg', 'detail');
+INSERT INTO ruangan_foto (ruangan_id, nama_file, tipe) VALUES (2, 'ruang102_cover.jpg', 'cover');

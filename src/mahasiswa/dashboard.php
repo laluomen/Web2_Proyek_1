@@ -143,7 +143,7 @@ $gedungList = query("SELECT DISTINCT gedung FROM ruangan ORDER BY gedung")->fetc
                               Kapasitas: <?= e($r['kapasitas']) ?> orang
                            </div>
 
-                           <a href="<?= $BASE ?>/mahasiswa/ruangan.php?id=<?= $r['id'] ?>" class="room-btn">
+                           <a href="<?= $BASE ?>mahasiswa/detail_ruangan.php?id=<?= $r['id'] ?>" class="room-btn">
                               View Details
                            </a>
                         </div>
