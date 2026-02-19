@@ -618,9 +618,9 @@ label {
 
 /* ================= AUTO RESPONSIVE ROOM GRID ================= */
 /* ================= LOCK 4 COLUMN GRID ================= */
-.room-section{
-  padding-top:10px;
-  padding-bottom:40px;
+.room-section {
+  padding-top: 10px;
+  padding-bottom: 40px;
 }
 
 .room-grid {
@@ -750,7 +750,6 @@ label {
 .room-btn:visited {
   color: #fff !important;
 }
-
 
 /* =====================
    ADMIN LAYOUT + SIDEBAR
@@ -1035,4 +1034,221 @@ label {
 
 .asb-logout .dot {
   background: rgba(255, 255, 255, 0.75);
+}
+
+/* HERO PAGE */
+.hero-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(15, 40, 60, 0.65);
+}
+
+.hero-page-content {
+  position: relative;
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.hero-page h1 {
+  font-size: 48px;
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+
+/* ================= HERO RUANGAN ================= */
+
+.hero-page {
+  position: relative;
+  height: 260px;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.hero-bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: brightness(0.45);
+}
+
+.hero-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    rgba(10, 20, 40, 0.4),
+    rgba(10, 20, 40, 0.7)
+  );
+}
+
+.hero-page-content {
+  position: relative;
+  color: #fff;
+}
+
+.hero-page h1 {
+  font-size: 48px;
+  font-weight: 800;
+  margin-bottom: 10px;
+}
+
+.breadcrumb{
+    margin-top:8px;
+    font-size:16px;
+    opacity:.95;
+    display:flex;
+    align-items:center;
+    gap:10px;
+}
+
+/* link home */
+.breadcrumb a{
+    color:#fff;
+    text-decoration:none;
+    font-weight:600;
+    position:relative;
+    transition:.2s;
+}
+
+/* underline hover smooth */
+.breadcrumb a::after{
+    content:"";
+    position:absolute;
+    left:0;
+    bottom:-2px;
+    width:0%;
+    height:2px;
+    background:#22c55e;
+    transition:.25s;
+}
+
+.breadcrumb a:hover::after{
+    width:100%;
+}
+
+/* separator */
+.breadcrumb .sep{
+    opacity:.6;
+}
+
+/* current page */
+.breadcrumb .current{
+    opacity:.85;
+    font-weight:500;
+}
+
+/* ================= ROOM GRID (SAMA DASHBOARD) ================= */
+
+.room-section {
+  padding-top: 10px;
+  padding-bottom: 40px;
+}
+
+.room-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 42px;
+  margin-top: 40px;
+}
+
+/* tablet */
+@media (max-width: 1100px) {
+  .room-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+/* hp */
+@media (max-width: 768px) {
+  .room-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 24px;
+  }
+}
+
+@media (max-width: 480px) {
+  .room-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* CARD */
+.room-card {
+  background: rgba(255, 255, 255, 0.96);
+  border-radius: 20px;
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.65);
+  backdrop-filter: blur(8px);
+  transition: 0.25s;
+  display: flex;
+  flex-direction: column;
+  box-shadow: 0 10px 28px rgba(0, 0, 0, 0.28);
+}
+
+.room-card:hover {
+  transform: translateY(-8px) scale(1.02);
+}
+
+.room-img {
+  width: 100%;
+  aspect-ratio: 16/9;
+  overflow: hidden;
+}
+
+.room-img img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: 0.35s;
+}
+
+.room-card:hover img {
+  transform: scale(1.08);
+}
+
+.room-body {
+  padding: 12px 14px 14px;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+}
+
+.room-title {
+  font-weight: 900;
+  color: #16a34a;
+  font-size: 17px;
+  margin-bottom: 4px;
+}
+
+.room-meta {
+  font-size: 14px;
+  color: #475569;
+  line-height: 1.5;
+  margin-bottom: auto;
+}
+
+.room-btn {
+  display: block;
+  text-align: center;
+  padding: 11px 14px;
+  border-radius: 12px;
+  font-weight: 800;
+  font-size: 14px;
+  background: linear-gradient(180deg, #22c55e, #16a34a);
+  color: #fff !important;
+  box-shadow: 0 8px 20px rgba(34, 197, 94, 0.35);
+  transition: 0.2s;
+}
+
+.room-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 28px rgba(34, 197, 94, 0.45);
 }
