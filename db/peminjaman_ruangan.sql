@@ -250,3 +250,27 @@ VALUES ('Ruang 111', 'Gedung B', 30, 'ruang111.jpg');
 
 INSERT INTO ruangan (nama_ruangan, gedung, kapasitas, foto)
 VALUES ('Ruang 112', 'Gedung B', 40, 'ruang112.jpg');
+
+CREATE TABLE ruangan_foto (
+  id INT NOT NULL AUTO_INCREMENT,
+  ruangan_id INT NOT NULL,
+  nama_file VARCHAR(255) NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  tipe ENUM('detail','cover') NOT NULL DEFAULT 'detail',
+
+  PRIMARY KEY (id),
+  KEY (ruangan_id),
+
+  CONSTRAINT fk_ruangan_foto_ruangan
+    FOREIGN KEY (ruangan_id) REFERENCES ruangan(id)
+    ON DELETE CASCADE
+    ON UPDATE CASCADE
+);
+
+ALTER TABLE ruangan 
+ADD COLUMN is_active TINYINT(1) NOT NULL DEFAULT 1
+AFTER foto;
+
+
+ALTER TABLE ruangan 
+ADD COLUMN Lantai VARCHAR(255) NOT NULL;
