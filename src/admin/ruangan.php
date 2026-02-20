@@ -11,9 +11,39 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
 $activeAdmin = 'ruangan';
 $pageTitle = "Kelola Ruangan";
 
-// Ambil data ruangan
-$stmt = query("SELECT * FROM ruangan ORDER BY nama_ruangan ASC");
+// Ambil data ruangan + foto sampul + jumlah foto detail
+$stmt = query(
+    "SELECT r.*,
+        (
+            SELECT rf.nama_file
+            FROM ruangan_foto rf
+            WHERE rf.ruangan_id = r.id AND rf.tipe = 'cover'
+            ORDER BY rf.id DESC
+            LIMIT 1
+        ) AS cover_foto,
+        (
+            SELECT COUNT(*)
+            FROM ruangan_foto rf
+            WHERE rf.ruangan_id = r.id AND rf.tipe = 'detail'
+        ) AS detail_count
+     FROM ruangan r
+     ORDER BY r.nama_ruangan ASC"
+);
 $ruangans = $stmt->fetchAll();
+
+// Map foto per ruangan untuk edit
+$fotoRows = query("SELECT id, ruangan_id, nama_file, tipe FROM ruangan_foto ORDER BY id DESC")->fetchAll();
+$ruanganPhotos = [];
+foreach ($fotoRows as $row) {
+    $rid = (int)$row['ruangan_id'];
+    if (!isset($ruanganPhotos[$rid])) {
+        $ruanganPhotos[$rid] = ['cover' => [], 'detail' => []];
+    }
+    $ruanganPhotos[$rid][$row['tipe']][] = [
+        'id' => (int)$row['id'],
+        'nama_file' => $row['nama_file']
+    ];
+}
 
 require_once __DIR__ . "/../templates/admin_head.php";
 require_once __DIR__ . "/../templates/admin_sidebar.php";
@@ -148,23 +178,27 @@ require_once __DIR__ . "/../templates/admin_sidebar.php";
                                         </span>
                                     </td>
                                     <td class="text-center">
-                                        <?php if ($ruangan['foto']): ?>
-                                            <img src="../uploads/ruangan/<?= htmlspecialchars($ruangan['foto']) ?>"
+                                        <?php $coverFoto = $ruangan['cover_foto'] ?: ($ruangan['foto'] ?? ''); ?>
+                                        <?php if ($coverFoto): ?>
+                                            <img src="../uploads/ruangan/<?= htmlspecialchars($coverFoto) ?>"
                                                 alt="<?= htmlspecialchars($ruangan['nama_ruangan']) ?>"
                                                 class="rounded shadow-sm img-thumbnail"
                                                 style="width: 80px; height: 55px; object-fit: cover; cursor: pointer;"
                                                 data-bs-toggle="modal" data-bs-target="#modalViewImage"
-                                                onclick="viewImage('../uploads/ruangan/<?= htmlspecialchars($ruangan['foto']) ?>', '<?= htmlspecialchars($ruangan['nama_ruangan']) ?>')">
+                                                onclick="viewImage('../uploads/ruangan/<?= htmlspecialchars($coverFoto) ?>', '<?= htmlspecialchars($ruangan['nama_ruangan']) ?>')">
                                         <?php else: ?>
                                             <span class="badge bg-secondary bg-opacity-10 text-secondary">
                                                 <i class="bi bi-image"></i> No Image
                                             </span>
                                         <?php endif; ?>
+                                        <div class="small text-muted mt-1">
+                                            Detail: <?= (int)($ruangan['detail_count'] ?? 0) ?> foto
+                                        </div>
                                     </td>
                                     <td>
                                         <div class="d-flex gap-1 justify-content-center">
                                             <button class="btn btn-info aksi-btn" style="min-width: 65px; font-size: 0.8rem;"
-                                                onclick="viewDetail(<?= $ruangan['id'] ?>, '<?= htmlspecialchars($ruangan['nama_ruangan']) ?>', '<?= htmlspecialchars($ruangan['gedung'] ?? '') ?>', <?= $ruangan['kapasitas'] ?>, '<?= htmlspecialchars($ruangan['deskripsi'] ?? '') ?>', '<?= htmlspecialchars($ruangan['foto'] ?? '') ?>')">
+                                                onclick="viewDetail(<?= $ruangan['id'] ?>, '<?= htmlspecialchars($ruangan['nama_ruangan']) ?>', '<?= htmlspecialchars($ruangan['gedung'] ?? '') ?>', <?= $ruangan['kapasitas'] ?>, '<?= htmlspecialchars($ruangan['deskripsi'] ?? '') ?>', '<?= htmlspecialchars($coverFoto ?? '') ?>')">
                                                 <i class="bi bi-eye-fill me-1"></i>Detail
                                             </button>
                                             <button class="btn btn-warning aksi-btn" style="min-width: 60px; font-size: 0.8rem;"
@@ -260,17 +294,27 @@ require_once __DIR__ . "/../templates/admin_sidebar.php";
 
                     <div class="mb-3">
                         <label class="form-label fw-semibold">
-                            <i class="bi bi-image me-1" style="color: #22c55e;"></i>Foto Ruangan
+                            <i class="bi bi-image me-1" style="color: #22c55e;"></i>Foto Sampul
                         </label>
-                        <input type="file" class="form-control" name="foto" accept="image/*" id="addFotoInput"
-                            onchange="previewAddImage(event)">
+                        <input type="file" class="form-control" name="foto_cover" accept="image/*" id="addCoverInput"
+                            onchange="previewAddCover(event)">
                         <small class="text-muted">
                             <i class="bi bi-info-circle me-1"></i>Format: JPG, PNG, GIF (Max 2MB)
                         </small>
-                        <div class="mt-3" id="addImagePreviewContainer" style="display: none;">
-                            <img id="addImagePreview" src="" alt="Preview" class="img-thumbnail rounded"
+                        <div class="mt-3" id="addCoverPreviewContainer" style="display: none;">
+                            <img id="addCoverPreview" src="" alt="Preview" class="img-thumbnail rounded"
                                 style="max-height: 200px;">
                         </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">
+                            <i class="bi bi-images me-1" style="color: #22c55e;"></i>Foto Detail (Bisa lebih dari satu)
+                        </label>
+                        <input type="file" class="form-control" name="foto_detail[]" accept="image/*" multiple>
+                        <small class="text-muted">
+                            <i class="bi bi-info-circle me-1"></i>Pilih beberapa foto untuk detail
+                        </small>
                     </div>
                 </div>
                 <div class="modal-footer bg-light border-0">
@@ -342,17 +386,47 @@ require_once __DIR__ . "/../templates/admin_sidebar.php";
 
                     <div class="mb-3">
                         <label class="form-label fw-semibold">
-                            <i class="bi bi-image me-1" style="color: #f59e0b;"></i>Foto Ruangan
+                            <i class="bi bi-image me-1" style="color: #f59e0b;"></i>Foto Sampul Saat Ini
                         </label>
-                        <input type="file" class="form-control" name="foto" accept="image/*" id="editFotoFile"
-                            onchange="previewEditImage(event)">
+                        <div id="editExistingCover" class="d-flex flex-wrap gap-2"></div>
                         <small class="text-muted">
-                            <i class="bi bi-info-circle me-1"></i>Kosongkan jika tidak ingin mengubah foto
+                            <i class="bi bi-info-circle me-1"></i>Centang jika ingin menghapus foto
                         </small>
-                        <div class="mt-3" id="editImagePreviewContainer" style="display: none;">
-                            <img id="editFotoPreview" src="" alt="Foto Preview" class="img-thumbnail rounded"
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">
+                            <i class="bi bi-images me-1" style="color: #f59e0b;"></i>Foto Detail Saat Ini
+                        </label>
+                        <div id="editExistingDetail" class="d-flex flex-wrap gap-2"></div>
+                        <small class="text-muted">
+                            <i class="bi bi-info-circle me-1"></i>Centang foto detail untuk dihapus
+                        </small>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">
+                            <i class="bi bi-image me-1" style="color: #f59e0b;"></i>Ganti Foto Sampul
+                        </label>
+                        <input type="file" class="form-control" name="foto_cover" accept="image/*" id="editCoverFile"
+                            onchange="previewEditCover(event)">
+                        <small class="text-muted">
+                            <i class="bi bi-info-circle me-1"></i>Kosongkan jika tidak ingin mengubah foto sampul
+                        </small>
+                        <div class="mt-3" id="editCoverPreviewContainer" style="display: none;">
+                            <img id="editCoverPreview" src="" alt="Foto Preview" class="img-thumbnail rounded"
                                 style="max-height: 200px;">
                         </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">
+                            <i class="bi bi-images me-1" style="color: #f59e0b;"></i>Tambah Foto Detail
+                        </label>
+                        <input type="file" class="form-control" name="foto_detail[]" accept="image/*" multiple>
+                        <small class="text-muted">
+                            <i class="bi bi-info-circle me-1"></i>Bisa pilih lebih dari satu foto
+                        </small>
                     </div>
                 </div>
                 <div class="modal-footer bg-light border-0">
@@ -411,6 +485,12 @@ require_once __DIR__ . "/../templates/admin_sidebar.php";
                             <img id="detailFoto" src="" alt="Foto Ruangan" class="img-fluid rounded shadow-sm"
                                 style="max-height: 250px; width: 100%; object-fit: cover;">
                         </div>
+                        <div class="mt-3">
+                            <div class="text-muted small mb-2">
+                                <i class="bi bi-images me-1"></i>Foto Detail
+                            </div>
+                            <div id="detailFotoList" class="d-flex flex-wrap gap-2"></div>
+                        </div>
                     </div>
                 </div>
                 <div class="mt-3">
@@ -449,6 +529,11 @@ require_once __DIR__ . "/../templates/admin_sidebar.php";
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 <script>
+    const ruanganPhotos = <?php echo json_encode(
+        $ruanganPhotos,
+        JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT
+    ); ?>;
+
     // Initialize Bootstrap tooltips
     document.addEventListener('DOMContentLoaded', function () {
         var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
@@ -473,28 +558,69 @@ require_once __DIR__ . "/../templates/admin_sidebar.php";
     });
 
     // Preview image on add modal
-    function previewAddImage(event) {
+    function previewAddCover(event) {
         const file = event.target.files[0];
         if (file) {
             const reader = new FileReader();
             reader.onload = function (e) {
-                document.getElementById('addImagePreview').src = e.target.result;
-                document.getElementById('addImagePreviewContainer').style.display = 'block';
+                document.getElementById('addCoverPreview').src = e.target.result;
+                document.getElementById('addCoverPreviewContainer').style.display = 'block';
             };
             reader.readAsDataURL(file);
         }
     }
 
     // Preview image on edit modal
-    function previewEditImage(event) {
+    function previewEditCover(event) {
         const file = event.target.files[0];
         if (file) {
             const reader = new FileReader();
             reader.onload = function (e) {
-                document.getElementById('editFotoPreview').src = e.target.result;
-                document.getElementById('editImagePreviewContainer').style.display = 'block';
+                document.getElementById('editCoverPreview').src = e.target.result;
+                document.getElementById('editCoverPreviewContainer').style.display = 'block';
             };
             reader.readAsDataURL(file);
+        }
+    }
+
+    function renderExistingFotos(id) {
+        const data = ruanganPhotos[id] || { cover: [], detail: [] };
+        const coverWrap = document.getElementById('editExistingCover');
+        const detailWrap = document.getElementById('editExistingDetail');
+
+        coverWrap.innerHTML = '';
+        detailWrap.innerHTML = '';
+
+        if (!data.cover.length) {
+            coverWrap.innerHTML = '<div class="text-muted small">Belum ada foto sampul.</div>';
+        } else {
+            data.cover.forEach(item => {
+                coverWrap.innerHTML += `
+                    <label class="border rounded p-2 text-center" style="width:120px;">
+                        <img src="../uploads/ruangan/${item.nama_file}" alt="Cover" class="img-fluid rounded" style="height:70px;object-fit:cover;width:100%;">
+                        <div class="form-check mt-1">
+                            <input class="form-check-input" type="checkbox" name="delete_foto[]" value="${item.id}">
+                            <span class="small">hapus</span>
+                        </div>
+                    </label>
+                `;
+            });
+        }
+
+        if (!data.detail.length) {
+            detailWrap.innerHTML = '<div class="text-muted small">Belum ada foto detail.</div>';
+        } else {
+            data.detail.forEach(item => {
+                detailWrap.innerHTML += `
+                    <label class="border rounded p-2 text-center" style="width:120px;">
+                        <img src="../uploads/ruangan/${item.nama_file}" alt="Detail" class="img-fluid rounded" style="height:70px;object-fit:cover;width:100%;">
+                        <div class="form-check mt-1">
+                            <input class="form-check-input" type="checkbox" name="delete_foto[]" value="${item.id}">
+                            <span class="small">hapus</span>
+                        </div>
+                    </label>
+                `;
+            });
         }
     }
 
@@ -507,8 +633,9 @@ require_once __DIR__ . "/../templates/admin_sidebar.php";
         document.getElementById('editDeskripsi').value = deskripsi;
 
         // Hide preview when opening modal
-        document.getElementById('editImagePreviewContainer').style.display = 'none';
-        document.getElementById('editFotoFile').value = '';
+        document.getElementById('editCoverPreviewContainer').style.display = 'none';
+        document.getElementById('editCoverFile').value = '';
+        renderExistingFotos(id);
     }
 
     // View detail function
@@ -517,12 +644,27 @@ require_once __DIR__ . "/../templates/admin_sidebar.php";
         document.getElementById('detailGedung').textContent = gedung || '-';
         document.getElementById('detailKapasitas').textContent = kapasitas ? kapasitas + ' orang' : '-';
         document.getElementById('detailDeskripsi').textContent = deskripsi || 'Tidak ada deskripsi';
+        const listWrap = document.getElementById('detailFotoList');
+        const data = ruanganPhotos[id] || { cover: [], detail: [] };
 
         if (foto) {
             document.getElementById('detailFoto').src = '../uploads/ruangan/' + foto;
             document.getElementById('detailFotoContainer').style.display = 'block';
         } else {
             document.getElementById('detailFotoContainer').innerHTML = '<div class="alert alert-secondary text-center"><i class="bi bi-image"></i> Tidak ada foto</div>';
+        }
+
+        listWrap.innerHTML = '';
+        if (!data.detail.length) {
+            listWrap.innerHTML = '<div class="text-muted small">Tidak ada foto detail.</div>';
+        } else {
+            data.detail.forEach(item => {
+                listWrap.innerHTML += `
+                    <img src="../uploads/ruangan/${item.nama_file}" alt="Detail" class="rounded border"
+                        style="width:90px;height:60px;object-fit:cover;cursor:pointer;"
+                        onclick="viewImage('../uploads/ruangan/${item.nama_file}', '${nama}')">
+                `;
+            });
         }
 
         // Show modal
@@ -546,7 +688,7 @@ require_once __DIR__ . "/../templates/admin_sidebar.php";
     // Reset add form when modal is closed
     document.getElementById('modalAddRuangan').addEventListener('hidden.bs.modal', function () {
         this.querySelector('form').reset();
-        document.getElementById('addImagePreviewContainer').style.display = 'none';
+        document.getElementById('addCoverPreviewContainer').style.display = 'none';
     });
 
     // Auto-dismiss alerts after 5 seconds

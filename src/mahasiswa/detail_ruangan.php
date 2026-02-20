@@ -8,6 +8,11 @@ if ($id <= 0) die("ID tidak valid");
 $ruangan = query("SELECT * FROM ruangan WHERE id = ?", [$id])->fetch();
 if (!$ruangan) die("Ruangan tidak ditemukan");
 
+$cover = query(
+  "SELECT nama_file FROM ruangan_foto WHERE ruangan_id = ? AND tipe='cover' ORDER BY id DESC LIMIT 1",
+  [$id]
+)->fetchColumn();
+
 $fotos = query(
   "SELECT nama_file FROM ruangan_foto WHERE ruangan_id = ? AND tipe='detail' ORDER BY id DESC",
   [$id]
@@ -23,7 +28,11 @@ $fasilitas = query(
 )->fetchAll();
 
 $images = [];
-if (!empty($ruangan['foto'])) $images[] = $BASE . "/uploads/ruangan/" . e($ruangan['foto']);
+if (!empty($cover)) {
+  $images[] = $BASE . "/uploads/ruangan/" . e($cover);
+} elseif (!empty($ruangan['foto'])) {
+  $images[] = $BASE . "/uploads/ruangan/" . e($ruangan['foto']);
+}
 foreach ($fotos as $f) $images[] = $BASE . "/uploads/ruangan/" . e($f['nama_file']);
 
 function iconFasilitas(string $nama): string {
@@ -84,13 +93,22 @@ function iconFasilitas(string $nama): string {
     background:linear-gradient(180deg,var(--accent),var(--accent2));color:#fff;box-shadow:0 10px 25px rgba(34,197,94,.35)}
 
   .slide-wrap{border-radius:16px;overflow:hidden;border:1px solid rgba(15,23,42,.12);box-shadow:0 10px 24px rgba(0,0,0,.12);background:#fff}
+  .carousel-item{position:relative}
   .carousel-item img{width:100%;height:320px;object-fit:cover;display:block}
   @media (max-width:768px){.carousel-item img{height:240px}}
+
+  .zoom-overlay{position:absolute;bottom:12px;right:12px;z-index:5;background:rgba(0,0,0,.55);color:#fff;
+    border:none;border-radius:10px;padding:8px 14px;font-size:14px;font-weight:700;cursor:pointer;
+    backdrop-filter:blur(6px);display:flex;align-items:center;gap:6px;transition:.2s}
+  .zoom-overlay:hover{background:rgba(34,197,94,.8);transform:scale(1.05)}
 
   .thumbs{display:flex;gap:10px;padding:12px;overflow:auto;background:#f8fafc;border-top:1px solid rgba(15,23,42,.08)}
   .thumb{width:92px;height:60px;border-radius:12px;overflow:hidden;border:2px solid transparent;flex:0 0 auto;cursor:pointer;background:#e5e7eb}
   .thumb img{width:100%;height:100%;object-fit:cover;display:block}
   .thumb.active{border-color:var(--accent)}
+
+  .img-modal .modal-content{background:#0b1220;border:1px solid rgba(255,255,255,.12)}
+  .img-modal .modal-header{border-bottom:1px solid rgba(255,255,255,.12)}
 </style>
 
 <div class="wrap">
@@ -148,7 +166,7 @@ function iconFasilitas(string $nama): string {
             <?php endif; ?>
           </div>
 
-          <a class="btn btn-green w-100" href="<?= $BASE ?>/ruangan.php">Kembali</a>
+          <a class="btn btn-green w-100" href="<?= $BASE ?>ruangan.php">Kembali</a>
         </div>
 
         <div class="col-lg-7">
@@ -163,6 +181,9 @@ function iconFasilitas(string $nama): string {
                   <?php foreach ($images as $i => $src): ?>
                     <div class="carousel-item <?= $i === 0 ? 'active' : '' ?>">
                       <img src="<?= $src ?>" alt="Foto <?= $i+1 ?>">
+                      <button type="button" class="zoom-overlay" data-zoom-src="<?= $src ?>">
+                        <i class="bi bi-zoom-in"></i> Perbesar
+                      </button>
                     </div>
                   <?php endforeach; ?>
                 </div>
@@ -177,7 +198,7 @@ function iconFasilitas(string $nama): string {
               <div class="thumbs" id="thumbs">
                 <?php foreach ($images as $i => $src): ?>
                   <div class="thumb <?= $i === 0 ? 'active' : '' ?>" data-index="<?= $i ?>">
-                    <img src="<?= $src ?>" alt="Thumb <?= $i+1 ?>">
+                    <img src="<?= $src ?>" alt="Thumb <?= $i+1 ?>" data-preview-src="<?= $src ?>">
                   </div>
                 <?php endforeach; ?>
               </div>
@@ -190,6 +211,20 @@ function iconFasilitas(string $nama): string {
   </div>
 </div>
 
+<div class="modal fade img-modal" id="imagePreviewModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-xl">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title text-white">Foto Ruangan</h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+      </div>
+      <div class="modal-body p-0 text-center">
+        <img id="imagePreviewSrc" src="" alt="Preview" class="img-fluid" style="max-height:80vh;">
+      </div>
+    </div>
+  </div>
+</div>
+
 <script>
 (() => {
   const el = document.getElementById('roomCarousel');
@@ -197,11 +232,45 @@ function iconFasilitas(string $nama): string {
   if (!el || !thumbs.length) return;
 
   const c = bootstrap.Carousel.getOrCreateInstance(el);
-  thumbs.forEach(t => t.onclick = () => c.to(+t.dataset.index));
+
+  // Thumbnail: klik pindah slide
+  thumbs.forEach(t => {
+    t.addEventListener('click', (e) => {
+      // Kalau klik tombol zoom di thumb, jangan pindah slide
+      if (e.target.closest('.zoom-btn')) return;
+      c.to(+t.dataset.index);
+    });
+  });
 
   el.addEventListener('slid.bs.carousel', e => {
     thumbs.forEach(x => x.classList.remove('active'));
     document.querySelector(`#thumbs .thumb[data-index="${e.to}"]`)?.classList.add('active');
+  });
+
+  // Modal preview
+  const modalEl = document.getElementById('imagePreviewModal');
+  const modal = new bootstrap.Modal(modalEl);
+  const preview = document.getElementById('imagePreviewSrc');
+
+  // Klik tombol zoom di carousel => buka modal
+  document.querySelectorAll('.zoom-overlay').forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      preview.src = btn.getAttribute('data-zoom-src');
+      modal.show();
+    });
+  });
+
+  // Double-klik thumbnail => buka modal
+  thumbs.forEach(t => {
+    t.addEventListener('dblclick', () => {
+      const img = t.querySelector('img');
+      if (img) {
+        preview.src = img.src;
+        modal.show();
+      }
+    });
   });
 })();
 </script>
