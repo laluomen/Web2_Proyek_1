@@ -267,8 +267,7 @@ CREATE TABLE ruangan_foto (
     ON UPDATE CASCADE
 );
 
--ALTER TABLE ruangan
-DROP COLUMN foto;
+
 
 ALTER TABLE ruangan 
 ADD COLUMN Lantai VARCHAR(255) NOT NULL;
