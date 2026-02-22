@@ -114,22 +114,73 @@ function normalizeFiles(array $files)
     return $normalized;
 }
 
+function sanitizeIdList($rawIds)
+{
+    if (!is_array($rawIds)) {
+        return [];
+    }
+
+    $result = [];
+    foreach ($rawIds as $id) {
+        $id = (int)$id;
+        if ($id > 0) {
+            $result[] = $id;
+        }
+    }
+
+    return array_values(array_unique($result));
+}
+
+function getValidFasilitasIds(array $ids)
+{
+    if (empty($ids)) {
+        return [];
+    }
+
+    $placeholders = implode(',', array_fill(0, count($ids), '?'));
+    $rows = query("SELECT id FROM fasilitas WHERE id IN ($placeholders)", $ids)->fetchAll();
+
+    $validIds = [];
+    foreach ($rows as $row) {
+        $validIds[] = (int)$row['id'];
+    }
+
+    return array_values(array_unique($validIds));
+}
+
+function syncRuanganFasilitas(int $ruanganId, array $fasilitasIds)
+{
+    query("DELETE FROM ruangan_fasilitas WHERE ruangan_id = ?", [$ruanganId]);
+
+    foreach ($fasilitasIds as $fasilitasId) {
+        query(
+            "INSERT INTO ruangan_fasilitas (ruangan_id, fasilitas_id) VALUES (?, ?)",
+            [$ruanganId, (int)$fasilitasId]
+        );
+    }
+}
+
 // ===== TAMBAH RUANGAN =====
 if ($action === 'add') {
     try {
         $nama_ruangan = $_POST['nama_ruangan'] ?? '';
         $gedung = $_POST['gedung'] ?? '';
+        $lantai = trim($_POST['lantai'] ?? '');
         $kapasitas = $_POST['kapasitas'] ?? null;
         $deskripsi = $_POST['deskripsi'] ?? '';
+        $fasilitasIds = getValidFasilitasIds(sanitizeIdList($_POST['fasilitas_ids'] ?? []));
 
         if (empty($nama_ruangan)) {
             throw new Exception("Nama ruangan tidak boleh kosong");
         }
+        if ($lantai === '') {
+            throw new Exception("Lantai tidak boleh kosong");
+        }
 
         // Insert ke database
         $stmt = query(
-            "INSERT INTO ruangan (nama_ruangan, gedung, kapasitas, deskripsi) VALUES (?, ?, ?, ?)",
-            [$nama_ruangan, $gedung, $kapasitas, $deskripsi]
+            "INSERT INTO ruangan (nama_ruangan, gedung, kapasitas, deskripsi, Lantai) VALUES (?, ?, ?, ?, ?)",
+            [$nama_ruangan, $gedung, $kapasitas, $deskripsi, $lantai]
         );
 
         $ruanganId = db()->lastInsertId();
@@ -155,6 +206,8 @@ if ($action === 'add') {
             }
         }
 
+        syncRuanganFasilitas((int)$ruanganId, $fasilitasIds);
+
         header("Location: ruangan.php?success=add");
         exit;
     } catch (Exception $e) {
@@ -166,14 +219,19 @@ if ($action === 'add') {
 // ===== EDIT RUANGAN =====
 else if ($action === 'edit') {
     try {
-        $id = $_POST['id'] ?? 0;
+        $id = (int)($_POST['id'] ?? 0);
         $nama_ruangan = $_POST['nama_ruangan'] ?? '';
         $gedung = $_POST['gedung'] ?? '';
+        $lantai = trim($_POST['lantai'] ?? '');
         $kapasitas = $_POST['kapasitas'] ?? null;
         $deskripsi = $_POST['deskripsi'] ?? '';
+        $fasilitasIds = getValidFasilitasIds(sanitizeIdList($_POST['fasilitas_ids'] ?? []));
 
         if (empty($id) || empty($nama_ruangan)) {
             throw new Exception("Data tidak valid");
+        }
+        if ($lantai === '') {
+            throw new Exception("Lantai tidak boleh kosong");
         }
 
         // Get ruangan saat ini
@@ -234,9 +292,11 @@ else if ($action === 'edit') {
 
         // Update database
         query(
-            "UPDATE ruangan SET nama_ruangan = ?, gedung = ?, kapasitas = ?, deskripsi = ? WHERE id = ?",
-            [$nama_ruangan, $gedung, $kapasitas, $deskripsi, $id]
+            "UPDATE ruangan SET nama_ruangan = ?, gedung = ?, kapasitas = ?, deskripsi = ?, Lantai = ? WHERE id = ?",
+            [$nama_ruangan, $gedung, $kapasitas, $deskripsi, $lantai, $id]
         );
+
+        syncRuanganFasilitas((int)$id, $fasilitasIds);
 
         header("Location: ruangan.php?success=edit");
         exit;

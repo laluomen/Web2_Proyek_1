@@ -74,6 +74,7 @@ require_once __DIR__ . "/../templates/header.php";
 
                            <div class="room-meta">
                               Lokasi : <?= e($r['gedung'] ?: '-') ?><br>
+                              Lantai : <?= e($r['Lantai'] ?? ($r['lantai'] ?? '-')) ?><br>
                               Kapasitas : <?= e($r['kapasitas'] ?? 0) ?> orang
                            </div>
 

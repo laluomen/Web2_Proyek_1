@@ -140,6 +140,7 @@ function iconFasilitas(string $nama): string {
         <div class="col-lg-5">
           <div class="d-flex flex-wrap gap-2 mb-3">
             <span class="info-pill">🏢 <?= e($ruangan['gedung'] ?? '-') ?></span>
+            <span class="info-pill">🏬 Lantai <?= e($ruangan['Lantai'] ?? ($ruangan['lantai'] ?? '-')) ?></span>
             <span class="info-pill">👥 <?= e((string)($ruangan['kapasitas'] ?? 0)) ?> orang</span>
           </div>
 

@@ -37,6 +37,15 @@ CREATE TABLE `fasilitas` (
 
 LOCK TABLES `fasilitas` WRITE;
 /*!40000 ALTER TABLE `fasilitas` DISABLE KEYS */;
+INSERT INTO `fasilitas` VALUES
+(1,'Proyektor'),
+(2,'AC'),
+(3,'WiFi'),
+(4,'Sound System'),
+(5,'Papan Tulis'),
+(6,'Mikrofon'),
+(7,'Kursi'),
+(8,'Meja');
 /*!40000 ALTER TABLE `fasilitas` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -125,7 +134,8 @@ CREATE TABLE `ruangan` (
   `gedung` varchar(100) DEFAULT NULL,
   `kapasitas` int DEFAULT NULL,
   `deskripsi` text,
- 
+  `foto` varchar(255) DEFAULT NULL,
+  `Lantai` varchar(255) NOT NULL,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -136,7 +146,47 @@ CREATE TABLE `ruangan` (
 
 LOCK TABLES `ruangan` WRITE;
 /*!40000 ALTER TABLE `ruangan` DISABLE KEYS */;
+INSERT INTO `ruangan` (`id`, `nama_ruangan`, `gedung`, `kapasitas`, `deskripsi`, `foto`, `Lantai`) VALUES
+(1,'Ruang 101','Gedung A',40,'Ruang kelas standar untuk kuliah teori.','ruang101.jpg','1'),
+(2,'Ruang 102','Gedung A',30,'Ruang presentasi dengan dukungan multimedia.','ruang102.jpg','1'),
+(3,'Ruang 111','Gedung B',30,'Ruang diskusi dan praktikum skala kecil.','ruang111.jpg','2'),
+(4,'Ruang 112','Gedung B',40,'Ruang kelas besar untuk kegiatan akademik.','ruang112.jpg','2');
 /*!40000 ALTER TABLE `ruangan` ENABLE KEYS */;
+UNLOCK TABLES;
+
+--
+-- Table structure for table `ruangan_foto`
+--
+
+DROP TABLE IF EXISTS `ruangan_foto`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!50503 SET character_set_client = utf8mb4 */;
+CREATE TABLE `ruangan_foto` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `ruangan_id` int NOT NULL,
+  `nama_file` varchar(255) NOT NULL,
+  `created_at` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `tipe` enum('detail','cover') NOT NULL DEFAULT 'detail',
+  PRIMARY KEY (`id`),
+  KEY `ruangan_id` (`ruangan_id`),
+  CONSTRAINT `fk_ruangan_foto_ruangan` FOREIGN KEY (`ruangan_id`) REFERENCES `ruangan` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Dumping data for table `ruangan_foto`
+--
+
+LOCK TABLES `ruangan_foto` WRITE;
+/*!40000 ALTER TABLE `ruangan_foto` DISABLE KEYS */;
+INSERT INTO `ruangan_foto` (`id`, `ruangan_id`, `nama_file`, `tipe`) VALUES
+(1,1,'ruang101.jpg','cover'),
+(2,2,'ruang102_cover.jpg','cover'),
+(3,2,'ruang102_detail1.jpg','detail'),
+(4,2,'ruang102_detail2.jpg','detail'),
+(5,3,'ruang111.jpg','cover'),
+(6,4,'ruang112.jpg','cover');
+/*!40000 ALTER TABLE `ruangan_foto` ENABLE KEYS */;
 UNLOCK TABLES;
 
 --
@@ -164,6 +214,11 @@ CREATE TABLE `ruangan_fasilitas` (
 
 LOCK TABLES `ruangan_fasilitas` WRITE;
 /*!40000 ALTER TABLE `ruangan_fasilitas` DISABLE KEYS */;
+INSERT INTO `ruangan_fasilitas` (`ruangan_id`, `fasilitas_id`) VALUES
+(1,1),(1,2),(1,3),(1,5),(1,7),(1,8),
+(2,1),(2,2),(2,3),(2,4),(2,5),(2,6),(2,7),(2,8),
+(3,2),(3,3),(3,7),(3,8),
+(4,1),(4,2),(4,3),(4,4),(4,7),(4,8);
 /*!40000 ALTER TABLE `ruangan_fasilitas` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -239,41 +294,3 @@ UNLOCK TABLES;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
 -- Dump completed on 2026-02-14 13:51:05
-INSERT INTO ruangan (nama_ruangan, gedung, kapasitas, foto)
-VALUES ('Ruang 101', 'Gedung A', 40, 'ruang101.jpg');
-
-INSERT INTO ruangan (nama_ruangan, gedung, kapasitas, foto)
-VALUES ('Ruang 102', 'Gedung A', 30, 'ruang102.jpg');
-
-INSERT INTO ruangan (nama_ruangan, gedung, kapasitas, foto)
-VALUES ('Ruang 111', 'Gedung B', 30, 'ruang111.jpg');
-
-INSERT INTO ruangan (nama_ruangan, gedung, kapasitas, foto)
-VALUES ('Ruang 112', 'Gedung B', 40, 'ruang112.jpg');
-
-CREATE TABLE ruangan_foto (
-  id INT NOT NULL AUTO_INCREMENT,
-  ruangan_id INT NOT NULL,
-  nama_file VARCHAR(255) NOT NULL,
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  tipe ENUM('detail','cover') NOT NULL DEFAULT 'detail',
-
-  PRIMARY KEY (id),
-  KEY (ruangan_id),
-
-  CONSTRAINT fk_ruangan_foto_ruangan
-    FOREIGN KEY (ruangan_id) REFERENCES ruangan(id)
-    ON DELETE CASCADE
-    ON UPDATE CASCADE
-);
-
-
-
-ALTER TABLE ruangan 
-ADD COLUMN Lantai VARCHAR(255) NOT NULL;
-
-INSERT INTO ruangan_foto (ruangan_id, nama_file, tipe)
-VALUES 
-(2, 'ruang102_detail1.jpg', 'detail'),
-(2, 'ruang102_detail2.jpg', 'detail');
-INSERT INTO ruangan_foto (ruangan_id, nama_file, tipe) VALUES (2, 'ruang102_cover.jpg', 'cover');
