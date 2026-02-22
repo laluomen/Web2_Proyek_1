@@ -45,6 +45,24 @@ foreach ($fotoRows as $row) {
     ];
 }
 
+// Master fasilitas untuk form tambah/edit
+$fasilitasList = query("SELECT id, nama_fasilitas FROM fasilitas ORDER BY id ASC, nama_fasilitas ASC")->fetchAll();
+$fasilitasNameMap = [];
+foreach ($fasilitasList as $f) {
+    $fasilitasNameMap[(int)$f['id']] = $f['nama_fasilitas'];
+}
+
+// Map fasilitas per ruangan untuk prefill form edit
+$rfRows = query("SELECT ruangan_id, fasilitas_id FROM ruangan_fasilitas ORDER BY ruangan_id, fasilitas_id")->fetchAll();
+$ruanganFasilitasMap = [];
+foreach ($rfRows as $row) {
+    $rid = (int)$row['ruangan_id'];
+    if (!isset($ruanganFasilitasMap[$rid])) {
+        $ruanganFasilitasMap[$rid] = [];
+    }
+    $ruanganFasilitasMap[$rid][] = (int)$row['fasilitas_id'];
+}
+
 require_once __DIR__ . "/../templates/admin_head.php";
 require_once __DIR__ . "/../templates/admin_sidebar.php";
 ?>
@@ -122,6 +140,9 @@ require_once __DIR__ . "/../templates/admin_sidebar.php";
                             <th style="width: 12%; padding: 15px;">
                                 <i class="bi bi-building me-1"></i>Gedung
                             </th>
+                            <th class="text-center" style="width: 10%; padding: 15px;">
+                                <i class="bi bi-layers me-1"></i>Lantai
+                            </th>
                             <th class="text-center" style="width: 12%; padding: 15px;">
                                 <i class="bi bi-people me-1"></i>Kapasitas
                             </th>
@@ -136,7 +157,7 @@ require_once __DIR__ . "/../templates/admin_sidebar.php";
                     <tbody>
                         <?php if (empty($ruangans)): ?>
                             <tr>
-                                <td colspan="6" class="text-center py-5">
+                                <td colspan="7" class="text-center py-5">
                                     <div class="text-muted">
                                         <i class="bi bi-inbox display-4 d-block mb-3"></i>
                                         <p class="mb-0">Belum ada data ruangan</p>
@@ -173,6 +194,12 @@ require_once __DIR__ . "/../templates/admin_sidebar.php";
                                     </td>
                                     <td class="text-center">
                                         <span class="badge px-3 py-2"
+                                            style="background: linear-gradient(135deg, #8b5cf6, #7c3aed); color: white; font-weight: 600; border-radius: 8px;">
+                                            <i class="bi bi-layers-fill me-1"></i><?= htmlspecialchars($ruangan['Lantai'] ?? '-') ?>
+                                        </span>
+                                    </td>
+                                    <td class="text-center">
+                                        <span class="badge px-3 py-2"
                                             style="background: linear-gradient(135deg, #22c55e, #16a34a); color: white; font-weight: 600; border-radius: 8px;">
                                             <i class="bi bi-people-fill me-1"></i><?= $ruangan['kapasitas'] ?? '0' ?> orang
                                         </span>
@@ -198,12 +225,12 @@ require_once __DIR__ . "/../templates/admin_sidebar.php";
                                     <td>
                                         <div class="d-flex gap-1 justify-content-center">
                                             <button class="btn btn-info aksi-btn" style="min-width: 65px; font-size: 0.8rem;"
-                                                onclick="viewDetail(<?= $ruangan['id'] ?>, '<?= htmlspecialchars($ruangan['nama_ruangan']) ?>', '<?= htmlspecialchars($ruangan['gedung'] ?? '') ?>', <?= $ruangan['kapasitas'] ?>, '<?= htmlspecialchars($ruangan['deskripsi'] ?? '') ?>', '<?= htmlspecialchars($coverFoto ?? '') ?>')">
+                                                onclick="viewDetail(<?= $ruangan['id'] ?>, '<?= htmlspecialchars($ruangan['nama_ruangan']) ?>', '<?= htmlspecialchars($ruangan['gedung'] ?? '') ?>', '<?= htmlspecialchars($ruangan['Lantai'] ?? '', ENT_QUOTES) ?>', <?= (int)($ruangan['kapasitas'] ?? 0) ?>, '<?= htmlspecialchars($ruangan['deskripsi'] ?? '') ?>', '<?= htmlspecialchars($coverFoto ?? '') ?>')">
                                                 <i class="bi bi-eye-fill me-1"></i>Detail
                                             </button>
                                             <button class="btn btn-warning aksi-btn" style="min-width: 60px; font-size: 0.8rem;"
                                                 data-bs-toggle="modal" data-bs-target="#modalEditRuangan"
-                                                onclick="editRuangan(<?= $ruangan['id'] ?>, '<?= htmlspecialchars($ruangan['nama_ruangan']) ?>', '<?= htmlspecialchars($ruangan['gedung'] ?? '') ?>', <?= $ruangan['kapasitas'] ?>, '<?= htmlspecialchars($ruangan['deskripsi'] ?? '') ?>')">
+                                                onclick="editRuangan(<?= $ruangan['id'] ?>, '<?= htmlspecialchars($ruangan['nama_ruangan']) ?>', '<?= htmlspecialchars($ruangan['gedung'] ?? '') ?>', '<?= htmlspecialchars($ruangan['Lantai'] ?? '', ENT_QUOTES) ?>', <?= (int)($ruangan['kapasitas'] ?? 0) ?>, '<?= htmlspecialchars($ruangan['deskripsi'] ?? '') ?>')">
                                                 <i class="bi bi-pencil-fill me-1"></i>Edit
                                             </button>
                                             <button class="btn btn-danger aksi-btn" style="min-width: 65px; font-size: 0.8rem;"
@@ -254,7 +281,7 @@ require_once __DIR__ . "/../templates/admin_sidebar.php";
                     <input type="hidden" name="action" value="add">
 
                     <div class="row">
-                        <div class="col-md-6 mb-3">
+                        <div class="col-md-4 mb-3">
                             <label class="form-label fw-semibold">
                                 <i class="bi bi-door-closed me-1" style="color: #22c55e;"></i>Nama Ruangan
                                 <span class="text-danger">*</span>
@@ -263,11 +290,19 @@ require_once __DIR__ . "/../templates/admin_sidebar.php";
                                 placeholder="Contoh: Ruang 301">
                         </div>
 
-                        <div class="col-md-6 mb-3">
+                        <div class="col-md-4 mb-3">
                             <label class="form-label fw-semibold">
                                 <i class="bi bi-building me-1" style="color: #22c55e;"></i>Gedung
                             </label>
                             <input type="text" class="form-control" name="gedung" placeholder="Contoh: Gedung A">
+                        </div>
+
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label fw-semibold">
+                                <i class="bi bi-layers me-1" style="color: #22c55e;"></i>Lantai
+                                <span class="text-danger">*</span>
+                            </label>
+                            <input type="text" class="form-control" name="lantai" required placeholder="Contoh: 2">
                         </div>
                     </div>
 
@@ -290,6 +325,29 @@ require_once __DIR__ . "/../templates/admin_sidebar.php";
                         </label>
                         <textarea class="form-control" name="deskripsi" rows="3"
                             placeholder="Keterangan ruangan (opsional)"></textarea>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">
+                            <i class="bi bi-check2-square me-1" style="color: #22c55e;"></i>Fasilitas
+                        </label>
+                        <?php if (empty($fasilitasList)): ?>
+                            <div class="text-muted small">Data fasilitas belum tersedia.</div>
+                        <?php else: ?>
+                            <div class="row g-2 fasilitas-grid">
+                                <?php foreach ($fasilitasList as $f): ?>
+                                    <div class="col-md-6">
+                                        <div class="fasilitas-item">
+                                            <input class="form-check-input" type="checkbox" name="fasilitas_ids[]"
+                                                value="<?= (int)$f['id'] ?>" id="addFasilitas<?= (int)$f['id'] ?>">
+                                            <label class="form-check-label" for="addFasilitas<?= (int)$f['id'] ?>">
+                                                <?= htmlspecialchars($f['nama_fasilitas']) ?>
+                                            </label>
+                                        </div>
+                                    </div>
+                                <?php endforeach; ?>
+                            </div>
+                        <?php endif; ?>
                     </div>
 
                     <div class="mb-3">
@@ -349,7 +407,7 @@ require_once __DIR__ . "/../templates/admin_sidebar.php";
                     <input type="hidden" name="id" id="editRuanganId">
 
                     <div class="row">
-                        <div class="col-md-6 mb-3">
+                        <div class="col-md-4 mb-3">
                             <label class="form-label fw-semibold">
                                 <i class="bi bi-door-closed me-1" style="color: #f59e0b;"></i>Nama Ruangan
                                 <span class="text-danger">*</span>
@@ -357,11 +415,19 @@ require_once __DIR__ . "/../templates/admin_sidebar.php";
                             <input type="text" class="form-control" name="nama_ruangan" id="editNamaRuangan" required>
                         </div>
 
-                        <div class="col-md-6 mb-3">
+                        <div class="col-md-4 mb-3">
                             <label class="form-label fw-semibold">
                                 <i class="bi bi-building me-1" style="color: #f59e0b;"></i>Gedung
                             </label>
                             <input type="text" class="form-control" name="gedung" id="editGedung">
+                        </div>
+
+                        <div class="col-md-4 mb-3">
+                            <label class="form-label fw-semibold">
+                                <i class="bi bi-layers me-1" style="color: #f59e0b;"></i>Lantai
+                                <span class="text-danger">*</span>
+                            </label>
+                            <input type="text" class="form-control" name="lantai" id="editLantai" required>
                         </div>
                     </div>
 
@@ -382,6 +448,30 @@ require_once __DIR__ . "/../templates/admin_sidebar.php";
                             <i class="bi bi-card-text me-1" style="color: #f59e0b;"></i>Deskripsi
                         </label>
                         <textarea class="form-control" name="deskripsi" id="editDeskripsi" rows="3"></textarea>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">
+                            <i class="bi bi-check2-square me-1" style="color: #f59e0b;"></i>Fasilitas
+                        </label>
+                        <?php if (empty($fasilitasList)): ?>
+                            <div class="text-muted small">Data fasilitas belum tersedia.</div>
+                        <?php else: ?>
+                            <div class="row g-2 fasilitas-grid">
+                                <?php foreach ($fasilitasList as $f): ?>
+                                    <div class="col-md-6">
+                                        <div class="fasilitas-item">
+                                            <input class="form-check-input edit-fasilitas-checkbox" type="checkbox"
+                                                name="fasilitas_ids[]" value="<?= (int)$f['id'] ?>"
+                                                id="editFasilitas<?= (int)$f['id'] ?>">
+                                            <label class="form-check-label" for="editFasilitas<?= (int)$f['id'] ?>">
+                                                <?= htmlspecialchars($f['nama_fasilitas']) ?>
+                                            </label>
+                                        </div>
+                                    </div>
+                                <?php endforeach; ?>
+                            </div>
+                        <?php endif; ?>
                     </div>
 
                     <div class="mb-3">
@@ -476,20 +566,28 @@ require_once __DIR__ . "/../templates/admin_sidebar.php";
                             </label>
                             <h6 id="detailKapasitas">-</h6>
                         </div>
+                        <div class="mb-3">
+                            <label class="text-muted small mb-1">
+                                <i class="bi bi-layers me-1"></i>Lantai
+                            </label>
+                            <h6 id="detailLantai">-</h6>
+                        </div>
+                        <div class="mb-3">
+                            <label class="text-muted small mb-1">
+                                <i class="bi bi-check2-square me-1"></i>Fasilitas
+                            </label>
+                            <div id="detailFasilitasList" class="d-flex flex-wrap gap-2"></div>
+                        </div>
                     </div>
                     <div class="col-md-6">
                         <label class="text-muted small mb-2">
-                            <i class="bi bi-image me-1"></i>Foto Ruangan
+                            <i class="bi bi-images me-1"></i>Galeri Foto (Sampul + Detail)
                         </label>
-                        <div id="detailFotoContainer">
-                            <img id="detailFoto" src="" alt="Foto Ruangan" class="img-fluid rounded shadow-sm"
-                                style="max-height: 250px; width: 100%; object-fit: cover;">
+                        <div id="detailGalleryContainer" class="detail-gallery-wrap">
+                            <div class="p-3 text-muted small">Belum ada foto.</div>
                         </div>
                         <div class="mt-3">
-                            <div class="text-muted small mb-2">
-                                <i class="bi bi-images me-1"></i>Foto Detail
-                            </div>
-                            <div id="detailFotoList" class="d-flex flex-wrap gap-2"></div>
+                            <div class="small text-muted mt-2" id="detailFotoSummary">-</div>
                         </div>
                     </div>
                 </div>
@@ -533,6 +631,14 @@ require_once __DIR__ . "/../templates/admin_sidebar.php";
                                 $ruanganPhotos,
                                 JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT
                             ); ?>;
+    const ruanganFasilitasMap = <?php echo json_encode(
+                                     $ruanganFasilitasMap,
+                                     JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT
+                                 ); ?>;
+    const fasilitasNameMap = <?php echo json_encode(
+                                  $fasilitasNameMap,
+                                  JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT
+                              ); ?>;
 
     // Initialize Bootstrap tooltips
     document.addEventListener('DOMContentLoaded', function() {
@@ -627,11 +733,37 @@ require_once __DIR__ . "/../templates/admin_sidebar.php";
         }
     }
 
+    function renderEditFasilitas(id) {
+        const selected = new Set((ruanganFasilitasMap[id] || []).map(String));
+        document.querySelectorAll('.edit-fasilitas-checkbox').forEach((cb) => {
+            cb.checked = selected.has(cb.value);
+        });
+    }
+
+    function renderDetailFasilitas(id) {
+        const wrap = document.getElementById('detailFasilitasList');
+        const ids = ruanganFasilitasMap[id] || [];
+        wrap.innerHTML = '';
+
+        if (!ids.length) {
+            wrap.innerHTML = '<span class="text-muted small">Belum ada fasilitas.</span>';
+            return;
+        }
+
+        ids.forEach((fid) => {
+            const name = fasilitasNameMap[fid] || ('Fasilitas #' + fid);
+            wrap.innerHTML += `
+                <span class="badge rounded-pill text-bg-light border px-3 py-2">${name}</span>
+            `;
+        });
+    }
+
     // Edit ruangan function
-    function editRuangan(id, nama, gedung, kapasitas, deskripsi) {
+    function editRuangan(id, nama, gedung, lantai, kapasitas, deskripsi) {
         document.getElementById('editRuanganId').value = id;
         document.getElementById('editNamaRuangan').value = nama;
         document.getElementById('editGedung').value = gedung;
+        document.getElementById('editLantai').value = lantai;
         document.getElementById('editKapasitas').value = kapasitas;
         document.getElementById('editDeskripsi').value = deskripsi;
 
@@ -639,38 +771,98 @@ require_once __DIR__ . "/../templates/admin_sidebar.php";
         document.getElementById('editCoverPreviewContainer').style.display = 'none';
         document.getElementById('editCoverFile').value = '';
         renderExistingFotos(id);
+        renderEditFasilitas(id);
     }
 
     // View detail function
-    function viewDetail(id, nama, gedung, kapasitas, deskripsi, foto) {
+    function viewDetail(id, nama, gedung, lantai, kapasitas, deskripsi, foto) {
         document.getElementById('detailNamaRuangan').textContent = nama;
         document.getElementById('detailGedung').textContent = gedung || '-';
         document.getElementById('detailKapasitas').textContent = kapasitas ? kapasitas + ' orang' : '-';
+        document.getElementById('detailLantai').textContent = lantai || '-';
         document.getElementById('detailDeskripsi').textContent = deskripsi || 'Tidak ada deskripsi';
-        const listWrap = document.getElementById('detailFotoList');
+        const galleryWrap = document.getElementById('detailGalleryContainer');
+        const fotoSummary = document.getElementById('detailFotoSummary');
         const data = ruanganPhotos[id] || {
             cover: [],
             detail: []
         };
 
-        if (foto) {
-            document.getElementById('detailFoto').src = '../uploads/ruangan/' + foto;
-            document.getElementById('detailFotoContainer').style.display = 'block';
-        } else {
-            document.getElementById('detailFotoContainer').innerHTML = '<div class="alert alert-secondary text-center"><i class="bi bi-image"></i> Tidak ada foto</div>';
-        }
+        renderDetailFasilitas(id);
 
-        listWrap.innerHTML = '';
-        if (!data.detail.length) {
-            listWrap.innerHTML = '<div class="text-muted small">Tidak ada foto detail.</div>';
-        } else {
-            data.detail.forEach(item => {
-                listWrap.innerHTML += `
-                    <img src="../uploads/ruangan/${item.nama_file}" alt="Detail" class="rounded border"
-                        style="width:90px;height:60px;object-fit:cover;cursor:pointer;"
-                        onclick="viewImage('../uploads/ruangan/${item.nama_file}', '${nama}')">
-                `;
+        const images = [];
+        const coverFromMap = (data.cover && data.cover.length > 0) ? data.cover[0].nama_file : '';
+        const coverFile = foto || coverFromMap;
+        if (coverFile) {
+            images.push({
+                src: '../uploads/ruangan/' + coverFile,
+                label: 'Sampul'
             });
+        }
+        data.detail.forEach((item) => {
+            images.push({
+                src: '../uploads/ruangan/' + item.nama_file,
+                label: 'Detail'
+            });
+        });
+
+        if (!images.length) {
+            galleryWrap.innerHTML = '<div class="p-3 text-muted small"><i class="bi bi-image me-1"></i>Tidak ada foto ruangan.</div>';
+            fotoSummary.textContent = 'Total foto: 0';
+        } else {
+            const slideItems = images.map((img, idx) => `
+                <div class="carousel-item ${idx === 0 ? 'active' : ''}" data-label="${img.label}">
+                    <img src="${img.src}" alt="${img.label} ${idx + 1}" class="detail-gallery-img">
+                </div>
+            `).join('');
+
+            const thumbItems = images.map((img, idx) => `
+                <button type="button" class="detail-thumb-item ${idx === 0 ? 'active' : ''}" data-index="${idx}" aria-label="Foto ${idx + 1}">
+                    <img src="${img.src}" alt="Thumb ${idx + 1}">
+                </button>
+            `).join('');
+
+            const controls = images.length > 1 ? `
+                <button class="carousel-control-prev" type="button" data-bs-target="#detailPhotoCarousel" data-bs-slide="prev">
+                    <span class="carousel-control-prev-icon"></span>
+                </button>
+                <button class="carousel-control-next" type="button" data-bs-target="#detailPhotoCarousel" data-bs-slide="next">
+                    <span class="carousel-control-next-icon"></span>
+                </button>
+            ` : '';
+
+            galleryWrap.innerHTML = `
+                <div id="detailPhotoCarousel" class="carousel slide" data-bs-interval="false">
+                    <div class="carousel-inner">${slideItems}</div>
+                    ${controls}
+                </div>
+                <div class="detail-thumb-list" id="detailThumbList">${thumbItems}</div>
+            `;
+
+            const carouselEl = document.getElementById('detailPhotoCarousel');
+            const carousel = bootstrap.Carousel.getOrCreateInstance(carouselEl, {
+                interval: false,
+                touch: true
+            });
+
+            const thumbs = galleryWrap.querySelectorAll('#detailThumbList .detail-thumb-item');
+            thumbs.forEach((thumb) => {
+                thumb.addEventListener('click', () => {
+                    const idx = Number(thumb.getAttribute('data-index') || 0);
+                    carousel.to(idx);
+                });
+            });
+
+            carouselEl.addEventListener('slid.bs.carousel', (e) => {
+                thumbs.forEach((thumb) => thumb.classList.remove('active'));
+                const activeThumb = galleryWrap.querySelector(`#detailThumbList .detail-thumb-item[data-index="${e.to}"]`);
+                if (activeThumb) {
+                    activeThumb.classList.add('active');
+                }
+            });
+
+            const detailCount = data.detail.length;
+            fotoSummary.textContent = 'Total foto: ' + images.length + ' (Sampul: ' + (coverFile ? 1 : 0) + ', Detail: ' + detailCount + ')';
         }
 
         // Show modal

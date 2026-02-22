@@ -140,6 +140,7 @@ $gedungList = query("SELECT DISTINCT gedung FROM ruangan ORDER BY gedung")->fetc
 
                            <div class="room-meta">
                               Lokasi: <?= e($r['gedung']) ?><br>
+                              Lantai: <?= e($r['Lantai'] ?? ($r['lantai'] ?? '-')) ?><br>
                               Kapasitas: <?= e($r['kapasitas']) ?> orang
                            </div>
 
