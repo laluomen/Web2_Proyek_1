@@ -12,6 +12,7 @@ autoMarkSelesai();
 
 $pageTitle = "Persetujuan Peminjaman";
 $activeAdmin = "approve";
+$adminId = (int) ($_SESSION['user_id'] ?? 0);
 
 $success = '';
 $error = '';
@@ -45,25 +46,66 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         } else {
             if ($action === 'approve') {
                 // Setujui
-                query("UPDATE peminjaman SET status_id = 2, catatan_admin = ? WHERE id = ? AND status_id = 1", [$catatan, $id]);
+                query(
+                    "UPDATE peminjaman SET status_id = 2, catatan_admin = ? WHERE id = ? AND status_id = 1",
+                    [$catatan, $id]
+                );
+
+                // log approve (status baru = 2)
+                $noteApprove = trim($catatan) !== '' ? $catatan : 'Disetujui oleh admin';
+                query(
+                    "INSERT INTO log_status (peminjaman_id, status_id, diubah_oleh, catatan) VALUES (?, ?, ?, ?)",
+                    [$id, 2, $adminId, $noteApprove]
+                );
+
+                // --- ambil daftar pengajuan lain yang bentrok SEBELUM di-update ---
+                $conflictIds = query(
+                    "SELECT id
+                    FROM peminjaman
+                    WHERE status_id = 1
+                    AND id <> ?
+                    AND ruangan_id = ?
+                    AND tanggal = ?
+                    AND NOT ( ? >= jam_selesai OR ? <= jam_mulai )",
+                    [$id, $p['ruangan_id'], $p['tanggal'], $p['jam_mulai'], $p['jam_selesai']]
+                )->fetchAll(PDO::FETCH_COLUMN);
 
                 // auto-tolak yang bentrok di slot sama
                 query(
                     "UPDATE peminjaman
                     SET status_id = 3,
-                        catatan_admin = IFNULL(NULLIF(catatan_admin,''), 'Mohon maaf, anda bentrok jadwal dengan pengajuan lain')
+                    catatan_admin = IFNULL(NULLIF(catatan_admin,''), 'Mohon maaf, anda bentrok jadwal dengan pengajuan lain')
                     WHERE status_id = 1
-                        AND id <> ?
-                        AND ruangan_id = ?
-                        AND tanggal = ?
-                        AND NOT ( ? >= jam_selesai OR ? <= jam_mulai )",
+                    AND id <> ?
+                    AND ruangan_id = ?
+                    AND tanggal = ?
+                    AND NOT ( ? >= jam_selesai OR ? <= jam_mulai )",
                     [$id, $p['ruangan_id'], $p['tanggal'], $p['jam_mulai'], $p['jam_selesai']]
                 );
+
+                // log untuk yang auto-ditolak karena bentrok
+                foreach ($conflictIds as $cid) {
+                    query(
+                        "INSERT INTO log_status (peminjaman_id, status_id, diubah_oleh, catatan) VALUES (?, ?, ?, ?)",
+                        [(int) $cid, 3, $adminId, 'Auto-ditolak karena bentrok jadwal']
+                    );
+                }
 
                 $success = "Pengajuan berhasil disetujui. Pengajuan lain yang bentrok otomatis ditolak.";
             } elseif ($action === 'reject') {
                 // Tolak
-                query("UPDATE peminjaman SET status_id = 3, catatan_admin = ? WHERE id = ? AND status_id = 1", [$catatan, $id]);
+                query(
+                    "UPDATE peminjaman SET status_id = 3, catatan_admin = ? WHERE id = ? AND status_id = 1",
+                    [$catatan, $id]
+                );
+
+                // log reject (status baru = 3)
+                $noteReject = trim($catatan) !== '' ? $catatan : 'Ditolak oleh admin';
+                query(
+                    "INSERT INTO log_status (peminjaman_id, status_id, diubah_oleh, catatan) VALUES (?, ?, ?, ?)",
+                    [$id, 3, $adminId, $noteReject]
+                );
+
                 $success = "Pengajuan berhasil ditolak.";
             } else {
                 $error = "Aksi tidak dikenal.";
