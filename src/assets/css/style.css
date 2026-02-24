@@ -1606,64 +1606,6 @@ label {
 }
 
 /* ================= DETAIL RUANGAN (MAHASISWA) ================= */
-.detail-ruangan-page .hero-page {
-  margin: 24px 0 18px;
-  border-radius: 18px;
-  box-shadow: 0 22px 60px rgba(0, 0, 0, 0.28);
-  border: 1px solid rgba(255, 255, 255, 0.12);
-}
-
-.detail-ruangan-page .hero-page-content {
-  padding: 0 18px;
-}
-
-.detail-ruangan-page .hero-page h1 {
-  font-size: 44px;
-  font-weight: 900;
-  margin: 0;
-  line-height: 1.1;
-}
-
-.detail-ruangan-page .breadcrumbx {
-  margin-top: 10px;
-  font-size: 15px;
-  opacity: 0.95;
-  display: flex;
-  gap: 10px;
-  justify-content: center;
-  flex-wrap: wrap;
-}
-
-.detail-ruangan-page .breadcrumbx a {
-  color: #fff;
-  text-decoration: none;
-  font-weight: 650;
-  position: relative;
-}
-
-.detail-ruangan-page .breadcrumbx a::after {
-  content: "";
-  position: absolute;
-  left: 0;
-  bottom: -2px;
-  width: 0;
-  height: 2px;
-  background: var(--accent);
-  transition: 0.25s;
-}
-
-.detail-ruangan-page .breadcrumbx a:hover::after {
-  width: 100%;
-}
-
-.detail-ruangan-page .breadcrumbx .sep {
-  opacity: 0.6;
-}
-
-.detail-ruangan-page .breadcrumbx .current {
-  opacity: 0.85;
-}
-
 .detail-ruangan-page .glass-card {
   border-radius: 22px;
   background: rgba(255, 255, 255, 0.94);
@@ -1817,14 +1759,6 @@ label {
 }
 
 @media (max-width: 768px) {
-  .detail-ruangan-page .hero-page {
-    height: 220px;
-  }
-
-  .detail-ruangan-page .hero-page h1 {
-    font-size: 30px;
-  }
-
   .detail-ruangan-page .carousel-item img {
     height: 240px;
   }

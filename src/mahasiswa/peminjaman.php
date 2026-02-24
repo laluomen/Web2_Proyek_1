@@ -11,6 +11,8 @@ requireRole('mahasiswa');
 $pageTitle = "Peminjaman";
 $activeNav = "peminjaman";
 
+$preselectRuanganId = (int) ($_GET['ruangan_id'] ?? 0);
+
 $userId = (int) ($_SESSION['user_id'] ?? 0);
 
 $success = '';
@@ -135,6 +137,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'creat
 
 // Data ruangan untuk dropdown
 $ruanganList = query("SELECT id, nama_ruangan, gedung, kapasitas FROM ruangan ORDER BY gedung, nama_ruangan")->fetchAll();
+$selectedRuanganId = (int) ($_POST['ruangan_id'] ?? $preselectRuanganId);
 
 // Riwayat pengajuan user
 $riwayat = query(
@@ -174,7 +177,7 @@ require_once __DIR__ . "/../templates/header.php";
                         <select name="ruangan_id" class="form-select" required>
                             <option value="">-- Pilih Ruangan --</option>
                             <?php foreach ($ruanganList as $r): ?>
-                                <option value="<?= (int) $r['id'] ?>" <?= ((int) ($_POST['ruangan_id'] ?? 0) === (int) $r['id']) ? 'selected' : '' ?>>
+                                <option value="<?= (int) $r['id'] ?>" <?= ($selectedRuanganId === (int) $r['id']) ? 'selected' : '' ?>>
                                     <?= e($r['gedung'] . ' - ' . $r['nama_ruangan'] . ' (Kapasitas: ' . ($r['kapasitas'] ?? '-') . ')') ?>
                                 </option>
                             <?php endforeach; ?>

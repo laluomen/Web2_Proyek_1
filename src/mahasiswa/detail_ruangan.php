@@ -1,12 +1,15 @@
 <?php
 require_once __DIR__ . '/../config/koneksi.php';
-require_once __DIR__ . '/../templates/header.php';
 
 $id = (int)($_GET['id'] ?? 0);
 if ($id <= 0) die("ID tidak valid");
 
 $ruangan = query("SELECT * FROM ruangan WHERE id = ?", [$id])->fetch();
 if (!$ruangan) die("Ruangan tidak ditemukan");
+
+$activeNav = 'ruangan';
+$pageTitle = 'Detail Ruangan - ' . ($ruangan['nama_ruangan'] ?? 'Peminjaman Ruangan');
+require_once __DIR__ . '/../templates/header.php';
 
 $cover = query(
   "SELECT nama_file FROM ruangan_foto WHERE ruangan_id = ? AND tipe='cover' ORDER BY id DESC LIMIT 1",
@@ -58,8 +61,7 @@ function iconFasilitas(string $nama): string {
 }
 ?>
 
-<div class="wrap detail-ruangan-page">
-  <div class="hero-page">
+<section class="hero-page">
     <?php if (!empty($images[0])): ?>
       <img class="hero-bg" src="<?= $images[0] ?>" alt="<?= e($ruangan['nama_ruangan']) ?>">
     <?php else: ?>
@@ -68,13 +70,15 @@ function iconFasilitas(string $nama): string {
     <div class="hero-overlay"></div>
     <div class="hero-page-content">
       <h1><?= e($ruangan['nama_ruangan']) ?></h1>
-      <div class="breadcrumbx">
-        <a href="<?= $BASE ?>/index.php">Home</a><span class="sep">/</span>
-        <a href="<?= $BASE ?>/ruangan.php">Ruangan</a><span class="sep">/</span>
+      <div class="breadcrumb">
+        <a href="<?= $BASE ?>/mahasiswa/dashboard.php">Home</a><span class="sep">/</span>
+        <a href="<?= $BASE ?>/mahasiswa/ruangan.php">Ruangan</a><span class="sep">/</span>
         <span class="current"><?= e($ruangan['nama_ruangan']) ?></span>
       </div>
     </div>
-  </div>
+</section>
+
+<div class="wrap detail-ruangan-page">
 
   <div class="glass-card">
     <div class="glass-head">
@@ -114,7 +118,10 @@ function iconFasilitas(string $nama): string {
             <?php endif; ?>
           </div>
 
-          <a class="btn btn-green w-100" href="<?= $BASE ?>ruangan.php">Kembali</a>
+          <div class="d-grid gap-2">
+            <a class="btn btn-green w-100" href="<?= $BASE ?>/mahasiswa/peminjaman.php?ruangan_id=<?= (int)$ruangan['id'] ?>">Booking Sekarang</a>
+            <a class="btn btn-outline-secondary w-100" href="<?= $BASE ?>/mahasiswa/ruangan.php">Kembali</a>
+          </div>
         </div>
 
         <div class="col-lg-7">
