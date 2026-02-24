@@ -1,6 +1,6 @@
 <?php
-if (session_status() === PHP_SESSION_NONE){
-     session_start();
+if (session_status() === PHP_SESSION_NONE) {
+    session_start();
 }
 
 date_default_timezone_set('Asia/Jakarta');
@@ -28,19 +28,22 @@ if (file_exists($envPath)) {
     }
 }
 
-function env(string $k, $default = null) {
+function env(string $k, $default = null)
+{
     return $_ENV[$k] ?? $default;
 }
 
-function db(): PDO {
+function db(): PDO
+{
     static $pdo = null;
-    if ($pdo) return $pdo;
+    if ($pdo)
+        return $pdo;
 
-    $dsn = "mysql:host=" . env('DB_HOST','127.0.0.1') .
-           ";dbname=" . env('DB_NAME','') .
-           ";charset=utf8mb4";
+    $dsn = "mysql:host=" . env('DB_HOST', '127.0.0.1') .
+        ";dbname=" . env('DB_NAME', '') .
+        ";charset=utf8mb4";
 
-    $pdo = new PDO($dsn, env('DB_USER','root'), env('DB_PASS',''), [
+    $pdo = new PDO($dsn, env('DB_USER', 'root'), env('DB_PASS', ''), [
         PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION,
         PDO::ATTR_DEFAULT_FETCH_MODE => PDO::FETCH_ASSOC,
     ]);
@@ -48,7 +51,8 @@ function db(): PDO {
     return $pdo;
 }
 
-function query(string $sql, array $params = []): PDOStatement {
+function query(string $sql, array $params = []): PDOStatement
+{
     $stmt = db()->prepare($sql);
     $stmt->execute($params);
     return $stmt;
@@ -60,20 +64,42 @@ function query(string $sql, array $params = []): PDOStatement {
  */
 function autoMarkSelesai(): void {
     $today = date('Y-m-d');
-    $now   = date('H:i:s');
+    $now = date('H:i:s');
 
-    query(
-        "UPDATE peminjaman
-         SET status_id = 4
+    // 1) ambil id yang akan di-mark selesai
+    $ids = query(
+        "SELECT id
+         FROM peminjaman
          WHERE status_id = 2
            AND (
                 tanggal < ?
                 OR (tanggal = ? AND jam_selesai <= ?)
            )",
         [$today, $today, $now]
+    )->fetchAll(PDO::FETCH_COLUMN);
+
+    if (!$ids)
+        return;
+
+    // 2) update status
+    query(
+        "UPDATE peminjaman
+         SET status_id = 4
+         WHERE id IN (" . implode(',', array_fill(0, count($ids), '?')) . ")",
+        array_map('intval', $ids)
     );
+
+    // 3) tulis log (system)
+    foreach ($ids as $pid) {
+        query(
+            "INSERT INTO log_status (peminjaman_id, status_id, diubah_oleh, catatan)
+            VALUES (?, 4, NULL, 'Otomatis selesai (waktu telah lewat)')",
+            [(int) $pid]
+        );
+    }
 }
 
-function e($value): string {
-    return htmlspecialchars((string)$value, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+function e($value): string
+{
+    return htmlspecialchars((string) $value, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
 }
