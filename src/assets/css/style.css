@@ -1604,3 +1604,228 @@ label {
 .detail-thumb-item.active {
   border-color: #22c55e;
 }
+
+/* ================= DETAIL RUANGAN (MAHASISWA) ================= */
+.detail-ruangan-page .hero-page {
+  margin: 24px 0 18px;
+  border-radius: 18px;
+  box-shadow: 0 22px 60px rgba(0, 0, 0, 0.28);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.detail-ruangan-page .hero-page-content {
+  padding: 0 18px;
+}
+
+.detail-ruangan-page .hero-page h1 {
+  font-size: 44px;
+  font-weight: 900;
+  margin: 0;
+  line-height: 1.1;
+}
+
+.detail-ruangan-page .breadcrumbx {
+  margin-top: 10px;
+  font-size: 15px;
+  opacity: 0.95;
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.detail-ruangan-page .breadcrumbx a {
+  color: #fff;
+  text-decoration: none;
+  font-weight: 650;
+  position: relative;
+}
+
+.detail-ruangan-page .breadcrumbx a::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -2px;
+  width: 0;
+  height: 2px;
+  background: var(--accent);
+  transition: 0.25s;
+}
+
+.detail-ruangan-page .breadcrumbx a:hover::after {
+  width: 100%;
+}
+
+.detail-ruangan-page .breadcrumbx .sep {
+  opacity: 0.6;
+}
+
+.detail-ruangan-page .breadcrumbx .current {
+  opacity: 0.85;
+}
+
+.detail-ruangan-page .glass-card {
+  border-radius: 22px;
+  background: rgba(255, 255, 255, 0.94);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  box-shadow: 0 22px 60px rgba(0, 0, 0, 0.28);
+  overflow: hidden;
+}
+
+.detail-ruangan-page .glass-head {
+  padding: 18px 20px;
+  border-bottom: 1px solid rgba(15, 23, 42, 0.08);
+  background: linear-gradient(180deg, #fff, #f8fafc);
+}
+
+.detail-ruangan-page .glass-head .title {
+  margin: 0;
+  font-size: 22px;
+  font-weight: 900;
+  color: #14532d;
+}
+
+.detail-ruangan-page .glass-head .sub {
+  margin: 6px 0 0;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.detail-ruangan-page .info-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 12px;
+  border-radius: 999px;
+  background: rgba(34, 197, 94, 0.1);
+  border: 1px solid rgba(34, 197, 94, 0.22);
+  font-weight: 750;
+  color: #14532d;
+  font-size: 13px;
+}
+
+.detail-ruangan-page .info-pill i {
+  font-size: 16px;
+  line-height: 1;
+}
+
+.detail-ruangan-page .btn-green {
+  border: none;
+  border-radius: 14px;
+  padding: 11px 14px;
+  font-weight: 900;
+  background: linear-gradient(180deg, var(--accent), var(--accent2));
+  color: #fff;
+  box-shadow: 0 10px 25px rgba(34, 197, 94, 0.35);
+}
+
+.detail-ruangan-page .slide-wrap {
+  border-radius: 16px;
+  overflow: hidden;
+  border: 1px solid rgba(15, 23, 42, 0.12);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, 0.12);
+  background: #fff;
+}
+
+.detail-ruangan-page .carousel-item {
+  position: relative;
+}
+
+.detail-ruangan-page .carousel-item img {
+  width: 100%;
+  height: 320px;
+  object-fit: cover;
+  display: block;
+}
+
+.detail-ruangan-page .zoom-overlay {
+  position: absolute;
+  bottom: 12px;
+  right: 12px;
+  z-index: 5;
+  background: rgba(0, 0, 0, 0.55);
+  color: #fff;
+  border: none;
+  border-radius: 10px;
+  padding: 8px 14px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  transition: 0.2s;
+}
+
+.detail-ruangan-page .zoom-overlay:hover {
+  background: rgba(34, 197, 94, 0.8);
+  transform: scale(1.05);
+}
+
+.detail-ruangan-page .thumbs {
+  display: flex;
+  gap: 10px;
+  padding: 12px;
+  overflow: auto;
+  background: #f8fafc;
+  border-top: 1px solid rgba(15, 23, 42, 0.08);
+}
+
+.detail-ruangan-page .thumb {
+  width: 92px;
+  height: 60px;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 2px solid transparent;
+  flex: 0 0 auto;
+  cursor: pointer;
+  background: #e5e7eb;
+}
+
+.detail-ruangan-page .thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.detail-ruangan-page .thumb.active {
+  border-color: var(--accent);
+}
+
+.detail-ruangan-page .hero-bg-fallback {
+  background: #111827;
+}
+
+.detail-ruangan-page .desc-box {
+  background: #f8fafc;
+  border: 1px solid rgba(15, 23, 42, 0.1);
+}
+
+.img-modal .modal-content {
+  background: #0b1220;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.img-modal .modal-header {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+.image-preview-src {
+  max-height: 80vh;
+}
+
+@media (max-width: 768px) {
+  .detail-ruangan-page .hero-page {
+    height: 220px;
+  }
+
+  .detail-ruangan-page .hero-page h1 {
+    font-size: 30px;
+  }
+
+  .detail-ruangan-page .carousel-item img {
+    height: 240px;
+  }
+}
