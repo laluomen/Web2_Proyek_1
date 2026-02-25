@@ -1,4 +1,5 @@
 <?php
+
 declare(strict_types=1);
 
 require_once __DIR__ . '/../auth/auth.php';
@@ -130,88 +131,164 @@ require_once __DIR__ . '/../templates/admin_head.php';
 require_once __DIR__ . '/../templates/admin_sidebar.php';
 ?>
 
-<div class="container-fluid py-4">
-    <div class="mb-3 p-3 rounded" style="background: rgba(0,0,0,.35);">
-        <h3 class="m-0 text-white fw-bold">Persetujuan Peminjaman</h3>
-        <div class="text-white-50">Admin berhak memutuskan siapa yang diapprove berdasarkan urgensi</div>
+<div class="admin-container" style="max-width: 100%;">
+    <!-- Page Header -->
+    <div class="kelola-header mb-4">
+        <h1><i class="bi bi-clipboard-check me-2"></i>Persetujuan Peminjaman</h1>
     </div>
 
+    <!-- Alert Messages -->
     <?php if ($error): ?>
-        <div class="alert alert-danger"><?= e($error) ?></div>
-    <?php endif; ?>
-    <?php if ($success): ?>
-        <div class="alert alert-success"><?= e($success) ?></div>
+        <div class="alert alert-danger alert-dismissible fade show shadow-sm" role="alert">
+            <i class="bi bi-exclamation-triangle-fill me-2"></i>
+            <strong>Error!</strong> <?= e($error) ?>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
     <?php endif; ?>
 
-    <div class="card">
-        <div class="card-body">
+    <?php if ($success): ?>
+        <div class="alert alert-success alert-dismissible fade show shadow-sm" role="alert">
+            <i class="bi bi-check-circle-fill me-2"></i>
+            <strong>Berhasil!</strong> <?= e($success) ?>
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    <?php endif; ?>
+
+    <!-- Card Tabel Persetujuan -->
+    <div class="card shadow border-0" style="border-radius: 15px; overflow: hidden;">
+        <div class="card-header bg-white py-3 border-bottom"
+            style="background: linear-gradient(to right, #f8f9fa, #e9ecef) !important;">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <h5 class="mb-0 fw-bold" style="color: #495057;">
+                        <i class="bi bi-list-ul me-2" style="color: #22c55e;"></i>Daftar Persetujuan
+                    </h5>
+                </div>
+                <div class="col-md-6">
+                    <div class="input-group shadow-sm" style="border-radius: 8px; overflow: hidden;">
+                        <span class="input-group-text bg-white border-end-0">
+                            <i class="bi bi-search" style="color: #22c55e;"></i>
+                        </span>
+                        <input type="text" class="form-control border-start-0 bg-white" id="searchInput"
+                            placeholder="Cari mahasiswa, ruangan, kegiatan..." style="border-left: 0;">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card-body p-0">
             <div class="table-responsive">
-                <table class="table table-bordered align-middle">
-                    <thead class="table-light">
+                <table class="table table-hover align-middle mb-0" id="tablePersetujuan">
+                    <thead style="background: linear-gradient(to right, #f8f9fa, #e9ecef);">
                         <tr>
-                            <th>#</th>
-                            <th style="min-width:150px;">Mahasiswa</th>
-                            <th style="min-width:100px;">Ruangan</th>
-                            <th style="min-width:100px;">Tanggal</th>
-                            <th style="min-width:110px;">Jam</th>
-                            <th>Kegiatan</th>
-                            <th>Peserta</th>
-                            <th>Surat</th>
-                            <th style="min-width:180px;">Persetujuan</th>
+                            <th class="text-center" style="width: 50px; padding: 15px 10px;">
+                                <i class="bi bi-hash"></i>
+                            </th>
+                            <th style="width: 20%; padding: 15px;">
+                                <i class="bi bi-person me-1"></i>Mahasiswa
+                            </th>
+                            <th style="width: 15%; padding: 15px;">
+                                <i class="bi bi-door-closed me-1"></i>Ruangan
+                            </th>
+                            <th class="text-center" style="width: 10%; padding: 15px;">
+                                <i class="bi bi-calendar3 me-1"></i>Tanggal
+                            </th>
+                            <th class="text-center" style="width: 10%; padding: 15px;">
+                                <i class="bi bi-clock me-1"></i>Jam
+                            </th>
+                            <th style="width: 15%; padding: 15px;">
+                                <i class="bi bi-clipboard-check me-1"></i>Kegiatan
+                            </th>
+                            <th class="text-center" style="width: 8%; padding: 15px;">
+                                <i class="bi bi-people me-1"></i>Peserta
+                            </th>
+                            <th class="text-center" style="width: 8%; padding: 15px;">
+                                <i class="bi bi-file-text me-1"></i>Surat
+                            </th>
+                            <th class="text-center" style="width: 280px; padding: 15px;">
+                                <i class="bi bi-gear me-1"></i>Aksi
+                            </th>
                         </tr>
                     </thead>
                     <tbody>
                         <?php if (!$pending): ?>
                             <tr>
-                                <td colspan="9" class="text-center">Tidak ada pengajuan menunggu.</td>
+                                <td colspan="9" class="text-center py-5">
+                                    <div class="text-muted">
+                                        <i class="bi bi-inbox display-4 d-block mb-3"></i>
+                                        <p class="mb-0">Belum ada pengajuan menunggu</p>
+                                        <small>Semua pengajuan telah diproses</small>
+                                    </div>
+                                </td>
                             </tr>
                         <?php else: ?>
                             <?php foreach ($pending as $i => $p): ?>
                                 <tr>
-                                    <td><?= $i + 1 ?></td>
+                                    <td class="text-center">
+                                        <span class="badge-number">
+                                            <?= $i + 1 ?>
+                                        </span>
+                                    </td>
                                     <td>
-                                        <?= e($p['nama_user'] ?? '-') ?>
-                                        <div class="text-muted small">
-                                            <?= e($p['username_user'] ?? '-') ?>
-                                            <?= !empty($p['prodi_user']) ? ' • ' . e($p['prodi_user']) : '' ?>
+                                        <div class="fw-bold text-dark" style="font-size: 1rem;">
+                                            <?= e($p['nama_user'] ?? '-') ?>
                                         </div>
+                                        <small class="text-muted" style="font-size: 0.85rem;">
+                                            <i class="bi bi-person-badge me-1"></i><?= e($p['username_user'] ?? '-') ?>
+                                            <?= !empty($p['prodi_user']) ? ' • ' . e($p['prodi_user']) : '' ?>
+                                        </small>
                                     </td>
-                                    <td><?= e(($p['gedung'] ?? '-') . ' - ' . ($p['nama_ruangan'] ?? '-')) ?></td>
-                                    <td style="white-space:nowrap;"><?= e($p['tanggal']) ?></td>
-                                    <td style="white-space:nowrap;">
-                                        <?= e(substr($p['jam_mulai'], 0, 5) . ' - ' . substr($p['jam_selesai'], 0, 5)) ?>
-                                    </td>
-                                    <td><?= e($p['nama_kegiatan']) ?></td>
-                                    <td><?= e($p['jumlah_peserta'] ?? '-') ?></td>
                                     <td>
+                                        <div class="fw-bold text-dark" style="font-size: 1rem;">
+                                            <?= e($p['nama_ruangan'] ?? '-') ?>
+                                        </div>
+                                        <small class="text-muted" style="font-size: 0.85rem;">
+                                            <i class="bi bi-building me-1"></i><?= e($p['gedung'] ?? '-') ?>
+                                        </small>
+                                    </td>
+                                    <td class="text-center">
+                                        <span class="badge" style="background: linear-gradient(135deg, #10b981, #059669);">
+                                            <?= date('d M Y', strtotime($p['tanggal'])) ?>
+                                        </span>
+                                    </td>
+                                    <td class="text-center">
+                                        <span class="badge" style="background: linear-gradient(135deg, #3b82f6, #2563eb);">
+                                            <?= e(substr($p['jam_mulai'], 0, 5) . ' - ' . substr($p['jam_selesai'], 0, 5)) ?>
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <span class="text-dark"><?= e($p['nama_kegiatan']) ?></span>
+                                    </td>
+                                    <td class="text-center">
+                                        <span class="badge" style="background: linear-gradient(135deg, #f59e0b, #d97706);">
+                                            <?= e($p['jumlah_peserta'] ?? '0') ?>
+                                        </span>
+                                    </td>
+                                    <td class="text-center">
                                         <?php if (!empty($p['surat'])): ?>
-                                            <!-- Sesuaikan jika ada handler download khusus -->
-                                            <a class="btn btn-sm px-3 text-white" style="background:#FFB300; border-color:#FFB300;"
-                                                href="<?= $BASE ?>uploads/surat/<?= e($p['surat']) ?>" target="_blank"
-                                                rel="noopener">
-                                                Lihat Surat
+                                            <a class="btn btn-warning" href="<?= $BASE ?>uploads/surat/<?= e($p['surat']) ?>"
+                                                target="_blank" rel="noopener">
+                                                <i class="bi bi-file-earmark-pdf me-1"></i>Lihat
                                             </a>
                                         <?php else: ?>
                                             <span class="text-muted">-</span>
                                         <?php endif; ?>
                                     </td>
-                                    <td class="text-center" style="min-width:260px;">
-                                        <form method="POST" class="d-flex flex-column align-items-center gap-2">
+                                    <td>
+                                        <form method="POST" class="d-flex flex-column gap-2" style="padding: 0.5rem;">
                                             <input type="hidden" name="peminjaman_id" value="<?= (int) $p['id'] ?>">
 
                                             <input type="text" name="catatan_admin" class="form-control form-control-sm"
-                                                placeholder="Catatan / alasan (opsional)" style="max-width:240px;">
+                                                placeholder="Catatan / alasan (opsional)" style="font-size: 0.875rem;">
 
-                                            <div class="d-flex gap-2">
-                                                <button class="btn btn-sm btn-success px-3" name="action" value="approve"
-                                                    onclick="return confirm('Setujui pengajuan ini?');">
-                                                    Setujui
+                                            <div class="d-flex justify-content-center">
+                                                <button class="btn btn-success me-2" name="action" value="approve"
+                                                    onclick="return confirm('Setujui pengajuan ini?\n\nPengajuan lain yang bentrok jadwal akan otomatis ditolak.');">
+                                                    <i class="bi bi-check-circle me-1"></i>Setujui
                                                 </button>
 
-                                                <button class="btn btn-sm px-3"
-                                                    style="background:#DC3545; border-color:#DC3545; color:#fff;" name="action"
-                                                    value="reject" onclick="return confirm('Tolak pengajuan ini?');">
-                                                    Tolak
+                                                <button class="btn btn-danger" name="action" value="reject"
+                                                    onclick="return confirm('Tolak pengajuan ini?');">
+                                                    <i class="bi bi-x-circle me-1"></i>Tolak
                                                 </button>
                                             </div>
                                         </form>
@@ -225,5 +302,38 @@ require_once __DIR__ . '/../templates/admin_sidebar.php';
         </div>
     </div>
 </div>
+
+<script>
+    // Search functionality
+    document.getElementById('searchInput').addEventListener('keyup', function() {
+        const searchValue = this.value.toLowerCase();
+        const table = document.getElementById('tablePersetujuan');
+        const rows = table.getElementsByTagName('tbody')[0].getElementsByTagName('tr');
+
+        for (let i = 0; i < rows.length; i++) {
+            const row = rows[i];
+
+            // Skip empty state row
+            if (row.cells.length === 1) continue;
+
+            const text = row.textContent.toLowerCase();
+
+            if (text.includes(searchValue)) {
+                row.style.display = '';
+            } else {
+                row.style.display = 'none';
+            }
+        }
+    });
+
+    // Auto-dismiss alerts after 5 seconds
+    setTimeout(function() {
+        const alerts = document.querySelectorAll('.alert-dismissible');
+        alerts.forEach(function(alert) {
+            const bsAlert = new bootstrap.Alert(alert);
+            bsAlert.close();
+        });
+    }, 5000);
+</script>
 
 <?php require_once __DIR__ . '/../templates/footer.php'; ?>
