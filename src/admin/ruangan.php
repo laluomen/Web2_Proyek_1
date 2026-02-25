@@ -112,7 +112,7 @@ require_once __DIR__ . "/../templates/admin_sidebar.php";
             <div class="row align-items-center">
                 <div class="col-md-6">
                     <h5 class="mb-0 fw-bold" style="color: #495057;">
-                        <i class="bi bi-list-ul me-2" style="color: #22c55e;"></i>Daftar Ruangan
+                        Daftar Ruangan
                     </h5>
                 </div>
                 <div class="col-md-6">
@@ -134,10 +134,10 @@ require_once __DIR__ . "/../templates/admin_sidebar.php";
                             <th class="text-center" style="width: 50px; padding: 15px 10px;">
                                 <i class="bi bi-hash"></i>
                             </th>
-                            <th style="width: 20%; padding: 15px;">
+                            <th class="text-center" style="width: 20%; padding: 15px;">
                                 <i class="bi bi-door-closed me-1"></i>Nama Ruangan
                             </th>
-                            <th style="width: 12%; padding: 15px;">
+                            <th class="text-center" style="width: 12%; padding: 15px;">
                                 <i class="bi bi-building me-1"></i>Gedung
                             </th>
                             <th class="text-center" style="width: 10%; padding: 15px;">
@@ -145,7 +145,7 @@ require_once __DIR__ . "/../templates/admin_sidebar.php";
                             </th>
                             <th class="text-center" style="width: 12%; padding: 15px;">
                                 <i class="bi bi-people me-1"></i>Kapasitas
-                            </th>
+                            </th>   
                             <th class="text-center" style="width: 10%; padding: 15px;">
                                 <i class="bi bi-image me-1"></i>Foto
                             </th>

@@ -18,27 +18,51 @@ $userId = (int) ($_SESSION['user_id'] ?? 0);
 $success = '';
 $error = '';
 
+function getCancelStatusId(): int
+{
+    static $cancelStatusId = null;
+    if ($cancelStatusId !== null) {
+        return $cancelStatusId;
+    }
+
+    $row = query(
+        "SELECT id
+         FROM status_peminjaman
+         WHERE LOWER(nama_status) IN ('dibatalkan', 'ditolak')
+         ORDER BY CASE LOWER(nama_status)
+             WHEN 'dibatalkan' THEN 1
+             WHEN 'ditolak' THEN 2
+             ELSE 3
+         END
+         LIMIT 1"
+    )->fetch();
+
+    $cancelStatusId = (int) ($row['id'] ?? 3);
+    return $cancelStatusId;
+}
+
 // --- Handle CANCEL (batalkan pengajuan yang masih Menunggu) ---
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && ($_POST['action'] ?? '') === 'cancel') {
     $id = (int) ($_POST['peminjaman_id'] ?? 0);
+    $cancelStatusId = getCancelStatusId();
 
     if ($id <= 0) {
         $error = "ID peminjaman tidak valid.";
     } else {
-        // BATALKAN: ubah status jadi Dibatalkan (5)
+        // BATALKAN: ubah status jadi Dibatalkan jika ada, fallback ke Ditolak
         $stmt = query(
             "UPDATE peminjaman
-             SET status_id = 5,
+             SET status_id = ?,
                  catatan_admin = IFNULL(NULLIF(catatan_admin,''), 'Dibatalkan oleh mahasiswa')
              WHERE id = ? AND user_id = ? AND status_id = 1",
-            [$id, $userId]
+            [$cancelStatusId, $id, $userId]
         );
 
         if ($stmt->rowCount() > 0) {
             query(
                 "INSERT INTO log_status (peminjaman_id, status_id, diubah_oleh, catatan)
-                 VALUES (?, 5, ?, 'Dibatalkan oleh mahasiswa')",
-                [$id, $userId]
+                 VALUES (?, ?, ?, 'Dibatalkan oleh mahasiswa')",
+                [$id, $cancelStatusId, $userId]
             );
             $success = "Pengajuan berhasil dibatalkan.";
         } else {
@@ -225,65 +249,166 @@ require_once __DIR__ . "/../templates/header.php";
         </div>
     </div>
 
-    <h4 class="mb-3">Riwayat Pengajuan Saya</h4>
-    <div class="rounded-4 bg-white shadow-sm">
-        <div class="table-responsive rounded-4">
-            <table class="table table-bordered align-middle mb-0">
-                <thead class="table-light">
-                    <tr>
-                        <th>#</th>
-                        <th>Ruangan</th>
-                        <th>Tanggal</th>
-                        <th>Jam</th>
-                        <th>Kegiatan</th>
-                        <th>Status</th>
-                        <th style="min-width:220px;">Catatan Admin</th>
-                        <th class="text-center" style="min-width: 140px;">Aksi</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <?php if (!$riwayat): ?>
+    <!-- Card Tabel Riwayat Peminjaman -->
+    <div class="card shadow border-0" style="border-radius: 15px; overflow: hidden;">
+        <div class="card-header bg-white py-3 border-bottom"
+            style="background: linear-gradient(to right, #f8f9fa, #e9ecef) !important;">
+            <div class="row align-items-center">
+                <div class="col-md-6">
+                    <h5 class="mb-0 fw-bold" style="color: #495057;">
+                        <i  style="color: #22c55e;"></i>Riwayat Pengajuan
+                    </h5>
+                </div>
+                <div class="col-md-6">
+                    <div class="input-group shadow-sm" style="border-radius: 8px; overflow: hidden;">
+                        <span class="input-group-text bg-white border-end-0">
+                            <i class="bi bi-search" style="color: #22c55e;"></i>
+                        </span>
+                        <input type="text" class="form-control border-start-0 bg-white" id="searchInput"
+                            placeholder="Cari ruangan, gedung..." style="border-left: 0;">
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-hover align-middle mb-0" id="tableRiwayat">
+                    <thead style="background: linear-gradient(to right, #f8f9fa, #e9ecef);">
                         <tr>
-                            <td colspan="8" class="text-center">Belum ada pengajuan.</td>
+                            <th  class="text-center" style="width: 50px; padding: 15px 10px;">
+                                <i class="bi bi-hash"></i>
+                            </th>
+                            <th class="text-center" style="width: 20%; padding: 15px;"><i class="bi bi-door-closed me-1"></i>Ruangan</th>
+                            <th class="text-center" style="width: 12%; padding: 15px;"><i class="bi bi-calendar-event me-1"></i>Tanggal</th>
+                            <th class="text-center" style="width: 10%; padding: 15px;"><i class="bi bi-clock me-1"></i>Jam</th>
+                            <th class="text-center" style="width: 12%; padding: 15px;"><i class="bi bi-card-text me-1"></i>Kegiatan</th>
+                            <th class="text-center" style="width: 10%; padding: 15px;"><i class="bi bi-patch-check me-1"></i>Status</th>
+                            <th class="text-center" style="width: 20%; padding: 15px;"><i class="bi bi-chat-left-text me-1"></i>Catatan </th>
+                            <th class="text-center" style="width: 210px; padding: 15px; white-space: nowrap;"><i class="bi bi-gear me-1"></i>Aksi</th>
                         </tr>
-                    <?php else: ?>
-                        <?php foreach ($riwayat as $i => $p): ?>
+                    </thead>
+                    <tbody>
+                        <?php if (empty($riwayat)): ?>
                             <tr>
-                                <td><?= $i + 1 ?></td>
-                                <td><?= e($p['gedung'] . ' - ' . $p['nama_ruangan']) ?></td>
-                                <td><?= e($p['tanggal']) ?></td>
-                                <td><?= e(substr($p['jam_mulai'], 0, 5) . ' - ' . substr($p['jam_selesai'], 0, 5)) ?></td>
-                                <td><?= e($p['nama_kegiatan']) ?></td>
-                                <td><?= e($p['nama_status']) ?></td>
-                                <td>
-                                    <?php if (!empty($p['catatan_admin'])): ?>
-                                        <?= e($p['catatan_admin']) ?>
-                                    <?php else: ?>
-                                        <span class="text-muted">-</span>
-                                    <?php endif; ?>
-                                </td>
-                                <td class="text-center" style="overflow:hidden;">
-                                    <?php if ((int) $p['status_id'] === 1): ?>
-                                        <form method="POST" onsubmit="return confirm('Batalkan pengajuan ini?');"
-                                            style="display:inline-block; max-width:100%;">
-                                            <input type="hidden" name="action" value="cancel">
-                                            <input type="hidden" name="peminjaman_id" value="<?= (int) $p['id'] ?>">
-                                            <button class="btn btn-sm btn-danger"
-                                                style="display:inline-block; width:auto; max-width:100%; padding:.35rem .9rem; border-radius:999px; white-space:nowrap;">
-                                                Batalkan
-                                            </button>
-                                        </form>
-                                    <?php else: ?>
-                                        <span class="text-muted">-</span>
-                                    <?php endif; ?>
+                                <td colspan="8" class="text-center py-5">
+                                    <div class="text-muted">
+                                        <i class="bi bi-inbox display-4 d-block mb-3"></i>
+                                        <p class="mb-0">Belum ada pengajuan peminjaman</p>
+                                        <small>Ajukan peminjaman ruangan pertama Anda</small>
+                                    </div>
                                 </td>
                             </tr>
-                        <?php endforeach; ?>
-                    <?php endif; ?>
-                </tbody>
-            </table>
+                        <?php else: ?>
+                            <?php foreach ($riwayat as $i => $p): ?>
+                                <?php $statusId = (int) $p['status_id']; ?>
+                                <tr>
+                                    <td class="text-center">
+                                        <span class="badge-number">
+                                            <?= $i + 1 ?>
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <div class="fw-bold text-dark" style="font-size: 1rem;">
+                                            <?= htmlspecialchars($p['nama_ruangan']) ?>
+                                        </div>
+                                        <small class="text-muted" style="font-size: 0.85rem;">
+                                            <i class="bi bi-building me-1"></i><?= htmlspecialchars($p['gedung'] ?? '-') ?>
+                                        </small>
+                                    </td>
+                                    <td>
+                                        <span class="badge px-3 py-2"
+                                            style="background: linear-gradient(135deg, #17a2b8, #138496); color: white; font-weight: 600; border-radius: 8px;">
+                                            <i class="bi bi-calendar-fill me-1"></i><?= htmlspecialchars($p['tanggal']) ?>
+                                        </span>
+                                    </td>
+                                    <td class="text-center">
+                                        <span class="badge px-3 py-2"
+                                            style="background: linear-gradient(135deg, #8b5cf6, #7c3aed); color: white; font-weight: 600; border-radius: 8px;">
+                                            <i class="bi bi-clock-fill me-1"></i><?= htmlspecialchars(substr($p['jam_mulai'], 0, 5)) ?> - <?= htmlspecialchars(substr($p['jam_selesai'], 0, 5)) ?>
+                                        </span>
+                                    </td>
+                                    <td class="text-center">
+                                        <span class="badge px-3 py-2"
+                                            style="background: linear-gradient(135deg, #22c55e, #16a34a); color: white; font-weight: 600; border-radius: 8px;">
+                                            <i class="bi bi-people-fill me-1"></i><?= htmlspecialchars($p['nama_kegiatan']) ?>
+                                        </span>
+                                    </td>
+                                    <td class="text-center">
+                                        <?php
+                                            if ($statusId === 1) $statusBg = 'linear-gradient(135deg, #f59e0b, #d97706)';
+                                            elseif ($statusId === 2) $statusBg = 'linear-gradient(135deg, #22c55e, #16a34a)';
+                                            elseif ($statusId === 3) $statusBg = 'linear-gradient(135deg, #ef4444, #dc2626)';
+                                            elseif ($statusId === 4) $statusBg = 'linear-gradient(135deg, #6b7280, #4b5563)';
+                                            elseif ($statusId === 5) $statusBg = 'linear-gradient(135deg, #f97316, #ea580c)';
+                                            else $statusBg = 'linear-gradient(135deg, #94a3b8, #64748b)';
+                                        ?>
+                                        <span class="badge px-3 py-2"
+                                            style="background: <?= $statusBg ?>; color: white; font-weight: 600; border-radius: 8px;">
+                                            <?= htmlspecialchars($p['nama_status']) ?>
+                                        </span>
+                                    </td>
+                                    <td>
+                                        <?php if (!empty($p['catatan_admin'])): ?>
+                                            <small class="text-muted" style="font-size: 0.85rem;">
+                                                <i class="bi bi-info-circle me-1"></i><?= htmlspecialchars(substr($p['catatan_admin'], 0, 60)) ?><?= strlen($p['catatan_admin']) > 60 ? '...' : '' ?>
+                                            </small>
+                                        <?php else: ?>
+                                            <span class="text-muted">-</span>
+                                        <?php endif; ?>
+                                    </td>
+                                    <td>
+                                        <div class="d-flex gap-1 justify-content-center">
+                                            <?php if ($statusId === 1): ?>
+                                                <form method="POST" onsubmit="return confirm('Batalkan pengajuan ini?');"
+                                                    style="display:inline-block;">
+                                                    <input type="hidden" name="action" value="cancel">
+                                                    <input type="hidden" name="peminjaman_id" value="<?= (int) $p['id'] ?>">
+                                                    <button class="btn btn-danger aksi-btn" style="min-width: 90px; font-size: 0.8rem;">
+                                                        <i class="bi bi-x-circle-fill me-1"></i>Batalkan
+                                                    </button>
+                                                </form>
+                                            <?php else: ?>
+                                                <span class="text-muted">-</span>
+                                            <?php endif; ?>
+                                        </div>
+                                    </td>
+                                </tr>
+                            <?php endforeach; ?>
+                        <?php endif; ?>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="card-footer bg-white py-3">
+            <div class="d-flex justify-content-between align-items-center">
+                <small class="text-muted fw-semibold">
+                    <i class="bi bi-info-circle-fill me-1" style="color: #22c55e;"></i>Total Data:
+                    <span class="badge ms-1"
+                        style="background: linear-gradient(135deg, #22c55e, #16a34a);"><?= count($riwayat) ?></span>
+                    pengajuan terdaftar
+                </small>
+                <small class="text-muted">
+                    <i class="bi bi-calendar-check me-1"></i><?= date('d F Y') ?>
+                </small>
+            </div>
         </div>
     </div>
 </div>
+
+<script>
+    document.getElementById('searchInput').addEventListener('keyup', function() {
+        const searchValue = this.value.toLowerCase();
+        const tableRows = document.querySelectorAll('#tableRiwayat tbody tr');
+
+        tableRows.forEach(row => {
+            const text = row.textContent.toLowerCase();
+            if (text.includes(searchValue)) {
+                row.style.display = '';
+            } else {
+                row.style.display = 'none';
+            }
+        });
+    });
+</script>
 
 <?php require_once __DIR__ . "/../templates/footer.php"; ?>
