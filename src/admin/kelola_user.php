@@ -117,7 +117,7 @@ require_once __DIR__ . "/../templates/admin_sidebar.php";
                             <?php foreach ($users as $i => $user): ?>
                                 <tr>
                                     <td class="text-center">
-                                        <span class="badge bg-secondary bg-opacity-75" style="font-size: 0.9rem; padding: 0.4rem 0.7rem;">
+                                        <span class="badge-number">
                                             <?= $i + 1 ?>
                                         </span>
                                     </td>
@@ -143,11 +143,11 @@ require_once __DIR__ . "/../templates/admin_sidebar.php";
                                     </td>
                                     <td class="text-center">
                                         <?php if ($user['role'] === 'admin'): ?>
-                                            <span class="badge px-3 py-2" style="background: linear-gradient(135deg, #667eea, #764ba2); color: white; font-weight: 600; border-radius: 8px;">
+                                            <span class="badge" style="background: linear-gradient(135deg, #667eea, #764ba2);">
                                                 <i class="bi bi-shield-fill-check me-1"></i>Admin
                                             </span>
                                         <?php else: ?>
-                                            <span class="badge px-3 py-2" style="background: linear-gradient(135deg, #0dcaf0, #0aa2c0); color: white; font-weight: 600; border-radius: 8px;">
+                                            <span class="badge" style="background: linear-gradient(135deg, #0dcaf0, #0aa2c0);">
                                                 <i class="bi bi-person-fill me-1"></i>Mahasiswa
                                             </span>
                                         <?php endif; ?>
@@ -158,21 +158,18 @@ require_once __DIR__ . "/../templates/admin_sidebar.php";
                                         </span>
                                     </td>
                                     <td>
-                                        <div class="d-flex gap-1 justify-content-center">
-                                            <button class="btn btn-info btn-sm text-white px-2"
-                                                style="min-width: 65px; font-size: 0.8rem;"
+                                        <div class="d-flex justify-content-center">
+                                            <button class="btn btn-info"
                                                 onclick="viewDetail(<?= $user['id'] ?>, '<?= htmlspecialchars($user['nama']) ?>', '<?= htmlspecialchars($user['username']) ?>', '<?= $user['role'] ?>', '<?= htmlspecialchars($user['prodi'] ?? '') ?>', '<?= date('d M Y', strtotime($user['created_at'])) ?>')">
                                                 <i class="bi bi-eye-fill me-1"></i>Detail
                                             </button>
-                                            <button class="btn btn-warning btn-sm text-white px-2"
-                                                style="min-width: 60px; font-size: 0.8rem;"
+                                            <button class="btn btn-warning"
                                                 data-bs-toggle="modal"
                                                 data-bs-target="#modalEditUser"
                                                 onclick="editUser(<?= $user['id'] ?>, '<?= htmlspecialchars($user['nama']) ?>', '<?= htmlspecialchars($user['username']) ?>', '<?= $user['role'] ?>', '<?= htmlspecialchars($user['prodi'] ?? '') ?>')">
                                                 <i class="bi bi-pencil-fill me-1"></i>Edit
                                             </button>
-                                            <button class="btn btn-danger btn-sm px-2"
-                                                style="min-width: 65px; font-size: 0.8rem;"
+                                            <button class="btn btn-danger"
                                                 onclick="deleteUser(<?= $user['id'] ?>, '<?= htmlspecialchars($user['nama']) ?>')">
                                                 <i class="bi bi-trash-fill me-1"></i>Hapus
                                             </button>

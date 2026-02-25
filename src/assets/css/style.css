@@ -1528,6 +1528,107 @@ label {
   align-items: center;
 }
 
+/* ================= KELOLA USER - TABLE SPECIFIC ================= */
+
+#tableUser {
+  border-collapse: separate;
+  border-spacing: 0;
+}
+
+#tableUser thead th {
+  font-size: 12px;
+  letter-spacing: 0.6px;
+  color: #475569;
+  border-bottom: 1px solid #e5e7eb;
+  background: linear-gradient(to right, #f8fafc, #eef2f7);
+}
+
+#tableUser tbody td {
+  padding: 14px 12px;
+  border-bottom: 1px solid #eef2f7;
+  vertical-align: middle;
+}
+
+/* column separator */
+#tableUser th,
+#tableUser td {
+  border-right: 1px solid #e5e7eb;
+}
+
+#tableUser th:last-child,
+#tableUser td:last-child {
+  border-right: none;
+}
+
+/* ===== HOVER ROW ===== */
+#tableUser tbody tr {
+  transition: background 0.15s ease;
+}
+
+#tableUser tbody tr:hover td {
+  background: #f1f5f9;
+}
+
+/* ================= BADGE & BUTTON ALIGNMENT (PIXEL PERFECT) ================= */
+
+/* base height semua label di tableUser */
+#tableUser .badge,
+#tableUser .btn {
+  height: 34px;
+  line-height: 34px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 16px;
+  font-size: 13px;
+  font-weight: 600;
+  border-radius: 8px;
+}
+
+/* bootstrap badge baseline correction */
+#tableUser .badge {
+  transform: translateY(-1px);
+}
+
+/* tombol */
+#tableUser .btn {
+  min-width: 65px;
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.18);
+  transition: 0.2s;
+  color: #fff;
+}
+
+/* warna tombol */
+#tableUser .btn-info {
+  background: linear-gradient(135deg, #22b8cf, #0ea5b7) !important;
+}
+
+#tableUser .btn-warning {
+  background: linear-gradient(135deg, #ffbe0b, #ff9800) !important;
+}
+
+#tableUser .btn-danger {
+  background: linear-gradient(135deg, #ef4444, #dc2626) !important;
+}
+
+/* hover tombol */
+#tableUser .btn:hover {
+  transform: translateY(-1px);
+}
+
+/* hilangkan teks hitam saat hover */
+#tableUser .btn-info:hover,
+#tableUser .btn-info:focus,
+#tableUser .btn-info:active {
+  color: #fff !important;
+}
+
+/* spacing tombol */
+#tableUser td:last-child .d-flex {
+  gap: 10px;
+  align-items: center;
+}
+
 /* ================= KELOLA RUANGAN - FORM FASILITAS & DETAIL GALERI ================= */
 .fasilitas-grid {
   margin-top: 0.35rem;
