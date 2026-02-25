@@ -178,9 +178,8 @@ require_once __DIR__ . "/../templates/header.php";
 ?>
 
 <div class="container py-4">
-    <div class="mb-3 p-3 rounded" style="background: rgba(0,0,0,.35);">
-        <h3 class="m-0 text-white fw-bold">Ajukan Peminjaman Ruangan</h3>
-        <div class="text-white-50">Isi form di bawah untuk masuk antrian peminjaman.</div>
+    <div class="kelola-header mb-4">
+        <h1>Ajukan Peminjaman</h1>
     </div>
 
     <?php if ($error): ?>
@@ -194,7 +193,17 @@ require_once __DIR__ . "/../templates/header.php";
         <div class="card-body">
             <form method="POST" enctype="multipart/form-data">
                 <input type="hidden" name="action" value="create">
-
+                 <div class="row align-items-center">
+                <div class="col-md-6">
+                    <h5 class="mb-0 fw-bold" style="color: #495057; padding-bottom: 20px;">
+                        Form Detail Peminjaman
+                    </h5>
+                </div>
+                <div class="col-md-6">
+                    <div class="input-group shadow-sm" style="border-radius: 8px; overflow: hidden;">
+                    </div>
+                </div>
+            </div>
                 <div class="row g-3">
                     <div class="col-md-6">
                         <label class="form-label">Ruangan</label>
