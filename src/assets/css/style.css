@@ -1417,6 +1417,7 @@ label {
   color: #475569;
   border-bottom: 1px solid #e5e7eb;
   background: linear-gradient(to right, #f8fafc, #eef2f7);
+  text-align: center;
 }
 
 #tableRuangan tbody td {
@@ -1633,6 +1634,7 @@ label {
   color: #475569;
   border-bottom: 1px solid #e5e7eb;
   background: linear-gradient(to right, #f8fafc, #eef2f7);
+  text-align: center;
 }
 
 #tableUser tbody td {
@@ -1734,6 +1736,7 @@ label {
   color: #475569;
   border-bottom: 1px solid #e5e7eb;
   background: linear-gradient(to right, #f8fafc, #eef2f7);
+  text-align: center;
 }
 
 #tablePersetujuan tbody td {

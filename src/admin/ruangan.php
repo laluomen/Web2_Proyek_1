@@ -112,7 +112,7 @@ require_once __DIR__ . "/../templates/admin_sidebar.php";
             <div class="row align-items-center">
                 <div class="col-md-6">
                     <h5 class="mb-0 fw-bold" style="color: #495057;">
-                        Daftar Ruangan
+                        <i class="bi bi-door-open me-2" style="color: #22c55e;"></i>Daftar Ruangan
                     </h5>
                 </div>
                 <div class="col-md-6">
@@ -145,7 +145,7 @@ require_once __DIR__ . "/../templates/admin_sidebar.php";
                             </th>
                             <th class="text-center" style="width: 12%; padding: 15px;">
                                 <i class="bi bi-people me-1"></i>Kapasitas
-                            </th>   
+                            </th>
                             <th class="text-center" style="width: 10%; padding: 15px;">
                                 <i class="bi bi-image me-1"></i>Foto
                             </th>
@@ -632,13 +632,13 @@ require_once __DIR__ . "/../templates/admin_sidebar.php";
                                 JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT
                             ); ?>;
     const ruanganFasilitasMap = <?php echo json_encode(
-                                     $ruanganFasilitasMap,
-                                     JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT
-                                 ); ?>;
+                                    $ruanganFasilitasMap,
+                                    JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT
+                                ); ?>;
     const fasilitasNameMap = <?php echo json_encode(
-                                  $fasilitasNameMap,
-                                  JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT
-                              ); ?>;
+                                    $fasilitasNameMap,
+                                    JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT
+                                ); ?>;
 
     // Initialize Bootstrap tooltips
     document.addEventListener('DOMContentLoaded', function() {
