@@ -2085,3 +2085,15 @@ label {
     height: 240px;
   }
 }
+
+/* ================= Login Page ================= */
+.login-stage .stats-left .s-card{
+  text-align:center;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  min-height:92px;
+}
+.login-stage .stats-left .s-val{ font-size:26px; line-height:1; }
+.login-stage .stats-left .s-lbl{ margin-top:8px; }
