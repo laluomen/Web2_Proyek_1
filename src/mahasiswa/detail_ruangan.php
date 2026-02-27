@@ -1,5 +1,10 @@
 <?php
+require_once __DIR__ . '/../auth/auth.php';
+require_once __DIR__ . '/../auth/role.php';
 require_once __DIR__ . '/../config/koneksi.php';
+
+requireLogin();
+requireRole('mahasiswa');
 
 $id = (int)($_GET['id'] ?? 0);
 if ($id <= 0) die("ID tidak valid");
