@@ -84,15 +84,14 @@ a {
   letter-spacing: 0.2px;
 }
 .logo {
-  width: 40px;
-  height: 40px;
-  border-radius: 12px;
+  width: 210px;
+  height: 54px;
+  /* border-radius: 12px;
   background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.16);
+  border: 1px solid rgba(255, 255, 255, 0.16); */
   display: flex;
   align-items: center;
   justify-content: center;
-  font-weight: 900;
 }
 
 /* Hamburger (mobile) */
@@ -820,11 +819,8 @@ label {
   letter-spacing: 0.2px;
 }
 .asb-logo {
-  width: 40px;
-  height: 40px;
-  border-radius: 14px;
-  background: rgba(255, 255, 255, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.16);
+  width: 210px;
+  height: 54px;
   display: flex;
   align-items: center;
   justify-content: center;

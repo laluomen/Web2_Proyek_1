@@ -21,11 +21,7 @@ if (!function_exists('aactive')) {
 <aside class="asb" id="adminSidebar" aria-label="Admin sidebar">
   <div class="asb-head">
     <a class="asb-brand" href="<?= $A['dashboard'] ?>">
-      <div class="asb-logo">NF</div>
-      <div class="asb-title">
-        <div class="t1">Admin Panel</div>
-        <div class="t2">Peminjaman Ruangan</div>
-      </div>
+      <img class="asb-logo" src="../assets/icons/admin_logo.svg" alt="NF">
     </a>
 
     <button class="asb-burger" id="asbBurger" aria-label="Toggle sidebar" aria-expanded="false">
