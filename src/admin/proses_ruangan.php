@@ -160,27 +160,53 @@ function syncRuanganFasilitas(int $ruanganId, array $fasilitasIds)
     }
 }
 
+function getValidLantaiId($lantaiId)
+{
+    $lantaiId = (int)$lantaiId;
+    if ($lantaiId <= 0) {
+        return null;
+    }
+
+    $row = query(
+        "SELECT l.id, l.gedung_id, l.nomor, g.nama_gedung
+         FROM lantai l
+         INNER JOIN gedung g ON g.id = l.gedung_id
+         WHERE l.id = ?
+         LIMIT 1",
+        [$lantaiId]
+    )->fetch();
+
+    return $row ?: null;
+}
+
 // ===== TAMBAH RUANGAN =====
 if ($action === 'add') {
     try {
         $nama_ruangan = $_POST['nama_ruangan'] ?? '';
-        $gedung = $_POST['gedung'] ?? '';
-        $lantai = trim($_POST['lantai'] ?? '');
-        $kapasitas = $_POST['kapasitas'] ?? null;
+        $lantaiId = (int)($_POST['lantai_id'] ?? 0);
+        $kapasitas = (int)($_POST['kapasitas'] ?? 0);
         $deskripsi = $_POST['deskripsi'] ?? '';
         $fasilitasIds = getValidFasilitasIds(sanitizeIdList($_POST['fasilitas_ids'] ?? []));
 
         if (empty($nama_ruangan)) {
             throw new Exception("Nama ruangan tidak boleh kosong");
         }
-        if ($lantai === '') {
+        if ($lantaiId <= 0) {
             throw new Exception("Lantai tidak boleh kosong");
+        }
+        if ($kapasitas <= 0) {
+            throw new Exception("Kapasitas wajib diisi dan harus lebih dari 0");
+        }
+
+        $validLantai = getValidLantaiId($lantaiId);
+        if (!$validLantai) {
+            throw new Exception("Lantai tidak valid");
         }
 
         // Insert ke database
-        $stmt = query(
-            "INSERT INTO ruangan (nama_ruangan, gedung, kapasitas, deskripsi, Lantai) VALUES (?, ?, ?, ?, ?)",
-            [$nama_ruangan, $gedung, $kapasitas, $deskripsi, $lantai]
+        query(
+            "INSERT INTO ruangan (nama_ruangan, lantai_id, kapasitas, deskripsi) VALUES (?, ?, ?, ?)",
+            [$nama_ruangan, $lantaiId, $kapasitas, $deskripsi]
         );
 
         $ruanganId = db()->lastInsertId();
@@ -221,17 +247,24 @@ else if ($action === 'edit') {
     try {
         $id = (int)($_POST['id'] ?? 0);
         $nama_ruangan = $_POST['nama_ruangan'] ?? '';
-        $gedung = $_POST['gedung'] ?? '';
-        $lantai = trim($_POST['lantai'] ?? '');
-        $kapasitas = $_POST['kapasitas'] ?? null;
+        $lantaiId = (int)($_POST['lantai_id'] ?? 0);
+        $kapasitas = (int)($_POST['kapasitas'] ?? 0);
         $deskripsi = $_POST['deskripsi'] ?? '';
         $fasilitasIds = getValidFasilitasIds(sanitizeIdList($_POST['fasilitas_ids'] ?? []));
 
         if (empty($id) || empty($nama_ruangan)) {
             throw new Exception("Data tidak valid");
         }
-        if ($lantai === '') {
+        if ($lantaiId <= 0) {
             throw new Exception("Lantai tidak boleh kosong");
+        }
+        if ($kapasitas <= 0) {
+            throw new Exception("Kapasitas wajib diisi dan harus lebih dari 0");
+        }
+
+        $validLantai = getValidLantaiId($lantaiId);
+        if (!$validLantai) {
+            throw new Exception("Lantai tidak valid");
         }
 
         // Get ruangan saat ini
@@ -292,8 +325,8 @@ else if ($action === 'edit') {
 
         // Update database
         query(
-            "UPDATE ruangan SET nama_ruangan = ?, gedung = ?, kapasitas = ?, deskripsi = ?, Lantai = ? WHERE id = ?",
-            [$nama_ruangan, $gedung, $kapasitas, $deskripsi, $lantai, $id]
+            "UPDATE ruangan SET nama_ruangan = ?, lantai_id = ?, kapasitas = ?, deskripsi = ? WHERE id = ?",
+            [$nama_ruangan, $lantaiId, $kapasitas, $deskripsi, $id]
         );
 
         syncRuanganFasilitas((int)$id, $fasilitasIds);

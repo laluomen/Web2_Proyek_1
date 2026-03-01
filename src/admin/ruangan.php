@@ -11,25 +11,43 @@ if (!isset($_SESSION['user_id']) || $_SESSION['role'] !== 'admin') {
 $activeAdmin = 'ruangan';
 $pageTitle = "Kelola Ruangan";
 
-// Ambil data ruangan + foto sampul + jumlah foto detail
+// Ambil data ruangan + relasi gedung/lantai + foto sampul + jumlah foto detail
 $stmt = query(
-    "SELECT r.*,
-        (
-            SELECT rf.nama_file
-            FROM ruangan_foto rf
-            WHERE rf.ruangan_id = r.id AND rf.tipe = 'cover'
-            ORDER BY rf.id DESC
-            LIMIT 1
-        ) AS cover_foto,
-        (
-            SELECT COUNT(*)
-            FROM ruangan_foto rf
-            WHERE rf.ruangan_id = r.id AND rf.tipe = 'detail'
-        ) AS detail_count
+    "SELECT r.*, l.id AS lantai_id, l.nomor AS Lantai, l.gedung_id,
+            g.nama_gedung AS gedung,
+            (
+                SELECT rf.nama_file
+                FROM ruangan_foto rf
+                WHERE rf.ruangan_id = r.id AND rf.tipe = 'cover'
+                ORDER BY rf.id DESC
+                LIMIT 1
+            ) AS cover_foto,
+            (
+                SELECT COUNT(*)
+                FROM ruangan_foto rf
+                WHERE rf.ruangan_id = r.id AND rf.tipe = 'detail'
+            ) AS detail_count
      FROM ruangan r
+     LEFT JOIN lantai l ON l.id = r.lantai_id
+     LEFT JOIN gedung g ON g.id = l.gedung_id
      ORDER BY r.nama_ruangan ASC"
 );
 $ruangans = $stmt->fetchAll();
+
+// Master gedung + lantai untuk dropdown form tambah/edit
+$gedungList = query("SELECT id, nama_gedung FROM gedung ORDER BY nama_gedung ASC")->fetchAll();
+$lantaiRows = query("SELECT id, gedung_id, nomor FROM lantai ORDER BY gedung_id ASC, nomor ASC")->fetchAll();
+$lantaiMapByGedung = [];
+foreach ($lantaiRows as $row) {
+    $gid = (int)$row['gedung_id'];
+    if (!isset($lantaiMapByGedung[$gid])) {
+        $lantaiMapByGedung[$gid] = [];
+    }
+    $lantaiMapByGedung[$gid][] = [
+        'id' => (int)$row['id'],
+        'nomor' => (int)$row['nomor'],
+    ];
+}
 
 // Map foto per ruangan untuk edit
 $fotoRows = query("SELECT id, ruangan_id, nama_file, tipe FROM ruangan_foto ORDER BY id DESC")->fetchAll();
@@ -230,7 +248,7 @@ require_once __DIR__ . "/../templates/admin_sidebar.php";
                                             </button>
                                             <button class="btn btn-warning aksi-btn" style="min-width: 60px; font-size: 0.8rem;"
                                                 data-bs-toggle="modal" data-bs-target="#modalEditRuangan"
-                                                onclick="editRuangan(<?= $ruangan['id'] ?>, '<?= htmlspecialchars($ruangan['nama_ruangan']) ?>', '<?= htmlspecialchars($ruangan['gedung'] ?? '') ?>', '<?= htmlspecialchars($ruangan['Lantai'] ?? '', ENT_QUOTES) ?>', <?= (int)($ruangan['kapasitas'] ?? 0) ?>, '<?= htmlspecialchars($ruangan['deskripsi'] ?? '') ?>')">
+                                                onclick="editRuangan(<?= $ruangan['id'] ?>, '<?= htmlspecialchars($ruangan['nama_ruangan']) ?>', <?= (int)($ruangan['gedung_id'] ?? 0) ?>, <?= (int)($ruangan['lantai_id'] ?? 0) ?>, <?= (int)($ruangan['kapasitas'] ?? 0) ?>, '<?= htmlspecialchars($ruangan['deskripsi'] ?? '') ?>')">
                                                 <i class="bi bi-pencil-fill me-1"></i>Edit
                                             </button>
                                             <button class="btn btn-danger aksi-btn" style="min-width: 65px; font-size: 0.8rem;"
@@ -293,8 +311,14 @@ require_once __DIR__ . "/../templates/admin_sidebar.php";
                         <div class="col-md-4 mb-3">
                             <label class="form-label fw-semibold">
                                 <i class="bi bi-building me-1" style="color: #22c55e;"></i>Gedung
+                                <span class="text-danger">*</span>
                             </label>
-                            <input type="text" class="form-control" name="gedung" placeholder="Contoh: Gedung A">
+                            <select class="form-select" id="addGedungSelect" required>
+                                <option value="">-- Pilih Gedung --</option>
+                                <?php foreach ($gedungList as $g): ?>
+                                    <option value="<?= (int)$g['id'] ?>"><?= htmlspecialchars($g['nama_gedung']) ?></option>
+                                <?php endforeach; ?>
+                            </select>
                         </div>
 
                         <div class="col-md-4 mb-3">
@@ -302,17 +326,20 @@ require_once __DIR__ . "/../templates/admin_sidebar.php";
                                 <i class="bi bi-layers me-1" style="color: #22c55e;"></i>Lantai
                                 <span class="text-danger">*</span>
                             </label>
-                            <input type="text" class="form-control" name="lantai" required placeholder="Contoh: 2">
+                            <select class="form-select" name="lantai_id" id="addLantaiSelect" required>
+                                <option value="">-- Pilih Lantai --</option>
+                            </select>
                         </div>
                     </div>
 
                     <div class="mb-3">
                         <label class="form-label fw-semibold">
                             <i class="bi bi-people me-1" style="color: #22c55e;"></i>Kapasitas
+                            <span class="text-danger">*</span>
                         </label>
                         <div class="input-group">
                             <input type="number" class="form-control" name="kapasitas" placeholder="Jumlah orang"
-                                min="1">
+                                min="1" required>
                             <span class="input-group-text">
                                 <i class="bi bi-person-fill"></i> orang
                             </span>
@@ -418,8 +445,14 @@ require_once __DIR__ . "/../templates/admin_sidebar.php";
                         <div class="col-md-4 mb-3">
                             <label class="form-label fw-semibold">
                                 <i class="bi bi-building me-1" style="color: #f59e0b;"></i>Gedung
+                                <span class="text-danger">*</span>
                             </label>
-                            <input type="text" class="form-control" name="gedung" id="editGedung">
+                            <select class="form-select" id="editGedungSelect" required>
+                                <option value="">-- Pilih Gedung --</option>
+                                <?php foreach ($gedungList as $g): ?>
+                                    <option value="<?= (int)$g['id'] ?>"><?= htmlspecialchars($g['nama_gedung']) ?></option>
+                                <?php endforeach; ?>
+                            </select>
                         </div>
 
                         <div class="col-md-4 mb-3">
@@ -427,16 +460,19 @@ require_once __DIR__ . "/../templates/admin_sidebar.php";
                                 <i class="bi bi-layers me-1" style="color: #f59e0b;"></i>Lantai
                                 <span class="text-danger">*</span>
                             </label>
-                            <input type="text" class="form-control" name="lantai" id="editLantai" required>
+                            <select class="form-select" name="lantai_id" id="editLantaiSelect" required>
+                                <option value="">-- Pilih Lantai --</option>
+                            </select>
                         </div>
                     </div>
 
                     <div class="mb-3">
                         <label class="form-label fw-semibold">
                             <i class="bi bi-people me-1" style="color: #f59e0b;"></i>Kapasitas
+                            <span class="text-danger">*</span>
                         </label>
                         <div class="input-group">
-                            <input type="number" class="form-control" name="kapasitas" id="editKapasitas" min="1">
+                            <input type="number" class="form-control" name="kapasitas" id="editKapasitas" min="1" required>
                             <span class="input-group-text">
                                 <i class="bi bi-person-fill"></i> orang
                             </span>
@@ -639,6 +675,31 @@ require_once __DIR__ . "/../templates/admin_sidebar.php";
                                     $fasilitasNameMap,
                                     JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT
                                 ); ?>;
+    const lantaiMapByGedung = <?php echo json_encode(
+                                    $lantaiMapByGedung,
+                                    JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT
+                                ); ?>;
+
+    function renderLantaiOptions(selectId, gedungId, selectedLantaiId = '') {
+        const selectEl = document.getElementById(selectId);
+        if (!selectEl) return;
+
+        const gid = String(gedungId || '');
+        const lantaiList = gid && lantaiMapByGedung[gid] ? lantaiMapByGedung[gid] : [];
+        selectEl.innerHTML = '<option value="">-- Pilih Lantai --</option>';
+
+        lantaiList.forEach((item) => {
+            const option = document.createElement('option');
+            option.value = String(item.id);
+            option.textContent = 'Lantai ' + item.nomor;
+            if (String(selectedLantaiId) === String(item.id)) {
+                option.selected = true;
+            }
+            selectEl.appendChild(option);
+        });
+
+        selectEl.disabled = !gid || lantaiList.length === 0;
+    }
 
     // Initialize Bootstrap tooltips
     document.addEventListener('DOMContentLoaded', function() {
@@ -646,6 +707,23 @@ require_once __DIR__ . "/../templates/admin_sidebar.php";
         var tooltipList = tooltipTriggerList.map(function(tooltipTriggerEl) {
             return new bootstrap.Tooltip(tooltipTriggerEl);
         });
+
+        const addGedungSelect = document.getElementById('addGedungSelect');
+        const editGedungSelect = document.getElementById('editGedungSelect');
+
+        if (addGedungSelect) {
+            addGedungSelect.addEventListener('change', function() {
+                renderLantaiOptions('addLantaiSelect', this.value, '');
+            });
+            renderLantaiOptions('addLantaiSelect', addGedungSelect.value, '');
+        }
+
+        if (editGedungSelect) {
+            editGedungSelect.addEventListener('change', function() {
+                renderLantaiOptions('editLantaiSelect', this.value, '');
+            });
+            renderLantaiOptions('editLantaiSelect', editGedungSelect.value, '');
+        }
     });
 
     // Search functionality
@@ -759,13 +837,15 @@ require_once __DIR__ . "/../templates/admin_sidebar.php";
     }
 
     // Edit ruangan function
-    function editRuangan(id, nama, gedung, lantai, kapasitas, deskripsi) {
+    function editRuangan(id, nama, gedungId, lantaiId, kapasitas, deskripsi) {
         document.getElementById('editRuanganId').value = id;
         document.getElementById('editNamaRuangan').value = nama;
-        document.getElementById('editGedung').value = gedung;
-        document.getElementById('editLantai').value = lantai;
         document.getElementById('editKapasitas').value = kapasitas;
         document.getElementById('editDeskripsi').value = deskripsi;
+
+        const editGedungSelect = document.getElementById('editGedungSelect');
+        editGedungSelect.value = gedungId ? String(gedungId) : '';
+        renderLantaiOptions('editLantaiSelect', editGedungSelect.value, lantaiId ? String(lantaiId) : '');
 
         // Hide preview when opening modal
         document.getElementById('editCoverPreviewContainer').style.display = 'none';
@@ -887,6 +967,7 @@ require_once __DIR__ . "/../templates/admin_sidebar.php";
     document.getElementById('modalAddRuangan').addEventListener('hidden.bs.modal', function() {
         this.querySelector('form').reset();
         document.getElementById('addCoverPreviewContainer').style.display = 'none';
+        renderLantaiOptions('addLantaiSelect', '', '');
     });
 
     // Auto-dismiss alerts after 5 seconds

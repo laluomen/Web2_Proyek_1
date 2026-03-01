@@ -118,10 +118,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 // List pengajuan Menunggu
 $pending = query(
     "SELECT p.id, p.nama_kegiatan, p.tanggal, p.jam_mulai, p.jam_selesai, p.jumlah_peserta, p.surat,
-            r.nama_ruangan, r.gedung,
+          r.nama_ruangan, g.nama_gedung AS gedung,
             u.nama AS nama_user, u.username AS username_user, u.prodi AS prodi_user
      FROM peminjaman p
      JOIN ruangan r ON r.id = p.ruangan_id
+    LEFT JOIN lantai l ON l.id = r.lantai_id
+    LEFT JOIN gedung g ON g.id = l.gedung_id
      JOIN users u ON u.id = p.user_id
      WHERE p.status_id = 1
      ORDER BY p.tanggal ASC, p.jam_mulai ASC, p.id ASC"

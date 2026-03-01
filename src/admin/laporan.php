@@ -34,7 +34,13 @@ $statusId = (int) ($_GET['status_id'] ?? 0);
 /**
  * Dropdown data
  */
-$ruanganList = query("SELECT id, nama_ruangan, gedung FROM ruangan ORDER BY gedung, nama_ruangan")->fetchAll();
+$ruanganList = query(
+    "SELECT r.id, r.nama_ruangan, g.nama_gedung AS gedung
+     FROM ruangan r
+     LEFT JOIN lantai l ON l.id = r.lantai_id
+     LEFT JOIN gedung g ON g.id = l.gedung_id
+     ORDER BY g.nama_gedung, r.nama_ruangan"
+)->fetchAll();
 $statusList = query("SELECT id, nama_status FROM status_peminjaman ORDER BY id")->fetchAll();
 
 /**
@@ -96,14 +102,16 @@ $avgDurasi = (string) (query(
  * Top ruangan (paling sering dipakai) status 2/4
  */
 $topRuangan = query(
-    "SELECT r.id, r.gedung, r.nama_ruangan,
+        "SELECT r.id, g.nama_gedung AS gedung, r.nama_ruangan,
             COUNT(p.id) AS jumlah_booking,
             COALESCE(SEC_TO_TIME(SUM(TIME_TO_SEC(TIMEDIFF(p.jam_selesai, p.jam_mulai)))), '00:00:00') AS total_jam
      FROM peminjaman p
      JOIN ruangan r ON r.id = p.ruangan_id
+         LEFT JOIN lantai l ON l.id = r.lantai_id
+         LEFT JOIN gedung g ON g.id = l.gedung_id
      WHERE p.status_id IN (2,4)
        AND p.tanggal BETWEEN ? AND ?
-     GROUP BY r.id, r.gedung, r.nama_ruangan
+         GROUP BY r.id, g.nama_gedung, r.nama_ruangan
      ORDER BY jumlah_booking DESC
      LIMIT 10",
     [$startDate, $endDate]
@@ -198,10 +206,12 @@ $detail = query(
     "SELECT p.id, p.tanggal, p.jam_mulai, p.jam_selesai, p.nama_kegiatan, p.jumlah_peserta, p.catatan_admin,
             sp.nama_status,
             u.nama AS nama_peminjam, u.prodi,
-            r.gedung, r.nama_ruangan
+         g.nama_gedung AS gedung, r.nama_ruangan
      FROM peminjaman p
      JOIN users u ON u.id = p.user_id
      JOIN ruangan r ON r.id = p.ruangan_id
+     LEFT JOIN lantai l ON l.id = r.lantai_id
+     LEFT JOIN gedung g ON g.id = l.gedung_id
      JOIN status_peminjaman sp ON sp.id = p.status_id
      WHERE $where
      ORDER BY p.tanggal DESC, p.jam_mulai DESC",
