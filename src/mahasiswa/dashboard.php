@@ -46,7 +46,7 @@ $sql .= " ORDER BY nama_ruangan";
 
 $ruangan = query($sql, $params)->fetchAll();
 
-$gedungList = query("SELECT DISTINCT gedung FROM ruangan ORDER BY gedung")->fetchAll();
+$gedungList = query("SELECT DISTINCT nama_gedung from gedung order by id")->fetchAll();
 ?>
 
 <!-- HERO -->
@@ -96,8 +96,8 @@ $gedungList = query("SELECT DISTINCT gedung FROM ruangan ORDER BY gedung")->fetc
                   <select name="gedung" class="form-control">
                      <option value="">Semua Gedung</option>
                      <?php foreach ($gedungList as $g): ?>
-                        <option value="<?= e($g['gedung']) ?>" <?= $gedung == $g['gedung'] ? 'selected' : '' ?>>
-                           <?= e($g['gedung']) ?>
+                        <option value="<?= e($g['nama_gedung']) ?>" <?= $gedung == $g['nama_gedung'] ? 'selected' : '' ?>>
+                           <?= e($g['nama_gedung']) ?>
                         </option>
                      <?php endforeach; ?>
                   </select>
